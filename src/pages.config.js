@@ -50,12 +50,18 @@
 import Dashboard from './pages/Dashboard';
 import Shops from './pages/Shops';
 import NewShop from './pages/NewShop';
+import ShopDetail from './pages/ShopDetail';
+import NewInspection from './pages/NewInspection';
+import MapView from './pages/MapView';
 
 
 export const PAGES = {
     "Dashboard": Dashboard,
     "Shops": Shops,
     "NewShop": NewShop,
+    "ShopDetail": ShopDetail,
+    "NewInspection": NewInspection,
+    "MapView": MapView,
 }
 
 export const pagesConfig = {
