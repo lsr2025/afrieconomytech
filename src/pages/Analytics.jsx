@@ -11,13 +11,19 @@ import {
   AlertTriangle,
   Download,
   Users,
-  BarChart3
+  BarChart3,
+  Brain,
+  FileText,
+  Target
 } from 'lucide-react';
 
 import ComplianceTrendChart from '../components/analytics/ComplianceTrendChart';
 import RiskHeatmap from '../components/analytics/RiskHeatmap';
 import DataExport from '../components/analytics/DataExport';
 import AgentPerformance from '../components/analytics/AgentPerformance';
+import PredictiveAnalytics from '../components/analytics/PredictiveAnalytics';
+import ReportBuilder from '../components/analytics/ReportBuilder';
+import InterventionTracking from '../components/analytics/InterventionTracking';
 
 export default function Analytics() {
   const { data: shops = [], isLoading: shopsLoading } = useQuery({
@@ -63,7 +69,7 @@ export default function Analytics() {
         </div>
       ) : (
         <Tabs defaultValue="trends" className="space-y-6">
-          <TabsList className="bg-slate-800 border-slate-700 grid grid-cols-2 md:grid-cols-4 gap-1 h-auto p-1">
+          <TabsList className="bg-slate-800 border-slate-700 flex flex-wrap gap-1 h-auto p-1">
             <TabsTrigger 
               value="trends" 
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-600 data-[state=active]:to-cyan-700 gap-2 py-3"
@@ -72,25 +78,46 @@ export default function Analytics() {
               <span className="hidden md:inline">Compliance</span> Trends
             </TabsTrigger>
             <TabsTrigger 
+              value="predictive" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-purple-700 gap-2 py-3"
+            >
+              <Brain className="w-4 h-4" />
+              <span className="hidden md:inline">Predictive</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="interventions" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 gap-2 py-3"
+            >
+              <Target className="w-4 h-4" />
+              <span className="hidden md:inline">Interventions</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="risks" 
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-600 data-[state=active]:to-red-700 gap-2 py-3"
             >
               <AlertTriangle className="w-4 h-4" />
-              Risk <span className="hidden md:inline">Heatmap</span>
+              <span className="hidden md:inline">Risk</span>
             </TabsTrigger>
             <TabsTrigger 
               value="agents" 
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-amber-700 gap-2 py-3"
             >
               <Users className="w-4 h-4" />
-              <span className="hidden md:inline">Agent</span> Performance
+              <span className="hidden md:inline">Agents</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="reports" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-600 data-[state=active]:to-cyan-700 gap-2 py-3"
+            >
+              <FileText className="w-4 h-4" />
+              <span className="hidden md:inline">Reports</span>
             </TabsTrigger>
             <TabsTrigger 
               value="export" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 gap-2 py-3"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-600 data-[state=active]:to-slate-700 gap-2 py-3"
             >
               <Download className="w-4 h-4" />
-              <span className="hidden md:inline">Data</span> Export
+              <span className="hidden md:inline">Export</span>
             </TabsTrigger>
           </TabsList>
 
@@ -125,12 +152,24 @@ export default function Analytics() {
             </div>
           </TabsContent>
 
+          <TabsContent value="predictive">
+            <PredictiveAnalytics shops={shops} inspections={inspections} />
+          </TabsContent>
+
+          <TabsContent value="interventions">
+            <InterventionTracking shops={shops} inspections={inspections} />
+          </TabsContent>
+
           <TabsContent value="risks">
             <RiskHeatmap shops={shops} inspections={inspections} />
           </TabsContent>
 
           <TabsContent value="agents">
             <AgentPerformance shops={shops} inspections={inspections} />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <ReportBuilder shops={shops} inspections={inspections} />
           </TabsContent>
 
           <TabsContent value="export">
