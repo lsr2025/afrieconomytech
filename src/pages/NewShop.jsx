@@ -27,21 +27,29 @@ import {
   Navigation,
   Users,
   Home,
-  GraduationCap
+  ShieldCheck,
+  Utensils,
+  CreditCard,
+  Truck,
+  Building,
+  ClipboardList,
+  Award
 } from 'lucide-react';
 
 const steps = [
-  { id: 1, title: 'Location', icon: MapPin },
-  { id: 2, title: 'Owner Info', icon: User },
-  { id: 3, title: 'Land & Tenure', icon: Home },
-  { id: 4, title: 'Employees', icon: Users },
-  { id: 5, title: 'Shop Details', icon: Store },
-  { id: 6, title: 'Documents', icon: FileText },
-  { id: 7, title: 'Photos', icon: Camera }
+  { id: 1, title: 'Shop & Owner', icon: User },
+  { id: 2, title: 'Registration', icon: FileText },
+  { id: 3, title: 'Infrastructure', icon: Building },
+  { id: 4, title: 'Hygiene', icon: ShieldCheck },
+  { id: 5, title: 'Food Safety', icon: Utensils },
+  { id: 6, title: 'Safety', icon: ClipboardList },
+  { id: 7, title: 'Business', icon: CreditCard },
+  { id: 8, title: 'NEF Eligibility', icon: Award },
+  { id: 9, title: 'Photos', icon: Camera }
 ];
 
 const StepIndicator = ({ currentStep }) => (
-  <div className="flex items-center justify-between mb-8 px-2">
+  <div className="flex items-center justify-center gap-1 mb-6 px-2 overflow-x-auto pb-2">
     {steps.map((step, index) => {
       const Icon = step.icon;
       const isActive = currentStep === step.id;
@@ -49,21 +57,21 @@ const StepIndicator = ({ currentStep }) => (
 
       return (
         <div key={step.id} className="flex items-center">
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center min-w-[48px]">
             <div className={`
-              w-10 h-10 rounded-full flex items-center justify-center transition-all
+              w-8 h-8 rounded-full flex items-center justify-center transition-all text-xs
               ${isCompleted ? 'bg-emerald-500 text-white' : 
                 isActive ? 'bg-red-600 text-white' : 
                 'bg-slate-700 text-slate-400'}
             `}>
-              {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+              {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
             </div>
-            <span className={`text-xs mt-2 hidden md:block ${isActive ? 'text-white' : 'text-slate-400'}`}>
+            <span className={`text-[10px] mt-1 text-center hidden lg:block ${isActive ? 'text-white' : 'text-slate-500'}`}>
               {step.title}
             </span>
           </div>
           {index < steps.length - 1 && (
-            <div className={`h-0.5 w-8 md:w-16 mx-2 ${isCompleted ? 'bg-emerald-500' : 'bg-slate-700'}`} />
+            <div className={`h-0.5 w-4 mx-0.5 ${isCompleted ? 'bg-emerald-500' : 'bg-slate-700'}`} />
           )}
         </div>
       );
@@ -93,7 +101,7 @@ const PhotoUpload = ({ label, value, onChange, description }) => {
       <Label className="text-white">{label}</Label>
       <div className="relative">
         {value ? (
-          <div className="relative h-40 rounded-lg overflow-hidden border border-slate-700">
+          <div className="relative h-32 rounded-lg overflow-hidden border border-slate-700">
             <img src={value} alt={label} className="w-full h-full object-cover" />
             <Button
               type="button"
@@ -106,20 +114,21 @@ const PhotoUpload = ({ label, value, onChange, description }) => {
             </Button>
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center h-40 rounded-lg border-2 border-dashed border-slate-600 hover:border-cyan-500 transition-colors cursor-pointer bg-slate-800/50">
+          <label className="flex flex-col items-center justify-center h-32 rounded-lg border-2 border-dashed border-slate-600 hover:border-cyan-500 transition-colors cursor-pointer bg-slate-800/50">
             <input
               type="file"
               accept="image/*"
+              capture="environment"
               onChange={handleUpload}
               className="hidden"
               disabled={uploading}
             />
             {uploading ? (
-              <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
+              <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
             ) : (
               <>
-                <Camera className="w-8 h-8 text-slate-400 mb-2" />
-                <span className="text-slate-400 text-sm">Tap to capture</span>
+                <Camera className="w-6 h-6 text-slate-400 mb-1" />
+                <span className="text-slate-400 text-xs">Tap to capture</span>
               </>
             )}
           </label>
@@ -130,89 +139,135 @@ const PhotoUpload = ({ label, value, onChange, description }) => {
   );
 };
 
+const YesNoSelect = ({ value, onChange, includeOther = false }) => (
+  <Select value={value} onValueChange={onChange}>
+    <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+      <SelectValue placeholder="Select" />
+    </SelectTrigger>
+    <SelectContent className="bg-slate-800 border-slate-700">
+      <SelectItem value="yes">Yes</SelectItem>
+      <SelectItem value="no">No</SelectItem>
+      {includeOther && <SelectItem value="other">Other</SelectItem>}
+    </SelectContent>
+  </Select>
+);
+
+const CheckboxItem = ({ label, checked, onChange }) => (
+  <div 
+    onClick={() => onChange(!checked)}
+    className={`p-3 rounded-lg border cursor-pointer transition-all ${
+      checked 
+        ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400' 
+        : 'bg-slate-800 border-slate-700 text-slate-400'
+    }`}
+  >
+    <span className="text-sm">{label}</span>
+  </div>
+);
+
 export default function NewShop() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [gpsLoading, setGpsLoading] = useState(false);
-  const [gpsAccuracy, setGpsAccuracy] = useState(null);
   
   const [formData, setFormData] = useState({
-    // Location
+    // Section 1: Shop & Owner Details
+    shop_name: '',
+    owner_name: '',
+    owner_email: '',
+    phone_number: '',
+    physical_address: '',
+    municipality: '',
+    ward: '',
     gps_latitude: null,
     gps_longitude: null,
     gps_accuracy: null,
-    ward: '',
-    municipality: '',
     
-    // Owner Info
-    shop_name: '',
-    owner_name: '',
-    owner_id_number: '',
-    owner_nationality: 'south_african',
-    owner_gender: '',
-    owner_age_group: '',
-    owner_education_level: '',
-    owner_pdg_status: '',
-    owner_disability_status: false,
-    owner_youth_status: false,
-    owner_woman_owned: false,
-    phone_number: '',
-    
-    // Land & Tenure
-    land_ownership_type: '',
-    tenure_security_status: '',
-    tenure_documentation: [],
-    monthly_rent: '',
-    
-    // Employees
-    num_employees: 0,
-    num_employees_fulltime: 0,
-    num_employees_parttime: 0,
-    num_employees_male: 0,
-    num_employees_female: 0,
-    num_employees_youth: 0,
-    num_employees_disabled: 0,
-    employees_pdg_breakdown: {
-      black_african: 0,
-      coloured: 0,
-      indian_asian: 0,
-      white: 0,
-      other: 0
-    },
-    employees_education_breakdown: {
-      no_formal: 0,
-      primary: 0,
-      secondary: 0,
-      matric: 0,
-      tertiary: 0
-    },
-    
-    // Shop Details
-    structure_type: '',
-    services: [],
-    stock_categories: [],
-    trading_months: '',
-    
-    // Documents
-    trading_permit_number: '',
-    trading_permit_expiry: '',
+    // Section 2: Business Registration & Compliance
+    is_cipc_registered: false,
+    cipc_number: '',
+    has_business_bank_account: false,
+    bank_name: '',
     has_coa: false,
     coa_number: '',
-    coa_expiry: '',
-    has_business_bank_account: false,
-    is_sars_registered: false,
-    cipc_number: '',
+    
+    // Section 3: Infrastructure & Operations
+    years_operating: '',
+    structure_type: '',
+    structure_type_other: '',
+    shop_size: '',
+    storage_types: [],
+    storage_other: '',
+    products_sold: [],
+    products_other: '',
+    
+    // Section 4: General Hygiene
+    hygiene_overall_cleanliness: null,
+    hygiene_waste_usage: '',
+    hygiene_waste_other: '',
+    hygiene_no_dust_dirt: null,
+    hygiene_handwashing: null,
+    hygiene_animals_pets: null,
+    hygiene_other: '',
+    
+    // Section 5: Food Safety
+    food_stored_on_floor: null,
+    food_expired_damaged: null,
+    food_within_expiry: null,
+    food_separated: null,
+    food_safety_other: '',
+    
+    // Section 6: General & Safety Requirements
+    safety_lighting_ventilation: null,
+    safety_floors_walls_ceiling: null,
+    safety_cleaning_materials: null,
+    safety_signage_hazards: null,
+    safety_disability_accessible: null,
+    safety_not_living_space: null,
+    
+    // Section 7: YMS Observations
+    yms_observations: '',
+    
+    // Part 2 - Section A: Digital & Payment Systems
+    payment_methods: [],
+    has_pos_system: null,
+    
+    // Section B: Ordering, Delivery & Collection
+    ordering_sources: [],
+    makes_deliveries: null,
+    customers_can_collect: null,
+    collection_methods: [],
+    
+    // Section C: Community Service Potential
+    collection_point_services: [],
+    space_security_adequate: null,
+    
+    // Section D: Business Activity & Support Needs
+    monthly_turnover: '',
+    num_employees: '',
+    support_needed: [],
+    
+    // Section E: NEF Grant Eligibility
+    nef_sa_citizen_valid_id: null,
+    nef_cipc_registered: null,
+    nef_bank_account_willing: null,
+    nef_sars_registered_willing: null,
+    nef_valid_coa: null,
+    nef_fixed_structure: null,
+    nef_min_6_months: null,
+    nef_basic_hygiene: null,
+    nef_willing_training: null,
+    nef_growth_potential: null,
     
     // Photos
     shop_photo_url: '',
     owner_photo_url: '',
     interior_photo_url: '',
     
-    // Consent
+    // Signatures & Consent
     consent_given: false,
-    
-    // Notes
-    notes: ''
+    owner_signature_url: '',
+    fieldworker_signature_url: ''
   });
 
   const createShop = useMutation({
@@ -233,7 +288,6 @@ export default function NewShop() {
             gps_longitude: position.coords.longitude,
             gps_accuracy: Math.round(position.coords.accuracy)
           }));
-          setGpsAccuracy(Math.round(position.coords.accuracy));
           setGpsLoading(false);
         },
         (error) => {
@@ -264,41 +318,15 @@ export default function NewShop() {
       compliance_status: 'pending',
       funding_status: 'pending_review',
       risk_level: 'medium',
-      consent_date: formData.consent_given ? new Date().toISOString() : null,
-      trading_months: formData.trading_months ? parseInt(formData.trading_months) : null
+      consent_date: formData.consent_given ? new Date().toISOString() : null
     };
     createShop.mutate(shopData);
   };
 
-  const updatePdgBreakdown = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      employees_pdg_breakdown: {
-        ...prev.employees_pdg_breakdown,
-        [field]: parseInt(value) || 0
-      }
-    }));
-  };
-
-  const updateEducationBreakdown = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      employees_education_breakdown: {
-        ...prev.employees_education_breakdown,
-        [field]: parseInt(value) || 0
-      }
-    }));
-  };
-
   const canProceed = () => {
     switch(currentStep) {
-      case 1: return formData.gps_latitude && formData.municipality;
-      case 2: return formData.shop_name && formData.owner_name;
-      case 3: return true; // Land & Tenure
-      case 4: return true; // Employees
-      case 5: return formData.structure_type; // Shop Details
-      case 6: return true; // Documents
-      case 7: return formData.consent_given; // Photos
+      case 1: return formData.shop_name && formData.owner_name && formData.municipality;
+      case 9: return formData.consent_given;
       default: return true;
     }
   };
@@ -308,15 +336,15 @@ export default function NewShop() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 md:p-6">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="mb-4">
+        <div className="flex items-center gap-3 mb-3">
           <Link to={createPageUrl('Shops')}>
             <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Profile New Shop</h1>
+            <h1 className="text-xl font-bold text-white">Spaza Shop Assessment</h1>
             <p className="text-slate-400 text-sm">Step {currentStep} of {steps.length}</p>
           </div>
         </div>
@@ -326,7 +354,7 @@ export default function NewShop() {
       <StepIndicator currentStep={currentStep} />
 
       <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50 max-w-2xl mx-auto">
-        <CardContent className="p-6">
+        <CardContent className="p-4 md:p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -335,68 +363,333 @@ export default function NewShop() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              {/* Step 1: Location */}
+              {/* Step 1: Shop & Owner Details */}
               {currentStep === 1 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <MapPin className="w-12 h-12 text-red-500 mx-auto mb-3" />
-                    <h2 className="text-xl font-semibold text-white">Capture Location</h2>
-                    <p className="text-slate-400 text-sm">Get precise GPS coordinates</p>
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <User className="w-10 h-10 text-cyan-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Section 1: Shop & Owner Details</h2>
                   </div>
 
-                  <Button
-                    onClick={captureGPS}
-                    disabled={gpsLoading}
-                    className="w-full h-16 bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-700 hover:to-cyan-800 text-white gap-3"
-                  >
-                    {gpsLoading ? (
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                    ) : (
-                      <Navigation className="w-6 h-6" />
-                    )}
-                    {gpsLoading ? 'Acquiring GPS...' : 'Capture GPS Location'}
-                  </Button>
-
-                  {formData.gps_latitude && (
-                    <div className="p-4 bg-slate-800 rounded-lg space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Latitude</span>
-                        <span className="text-white font-mono">{formData.gps_latitude.toFixed(6)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Longitude</span>
-                        <span className="text-white font-mono">{formData.gps_longitude.toFixed(6)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Accuracy</span>
-                        <span className={`font-mono ${gpsAccuracy <= 10 ? 'text-emerald-400' : 'text-amber-400'}`}>
-                          ±{gpsAccuracy}m
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-white">Municipality *</Label>
-                      <Select value={formData.municipality} onValueChange={(v) => updateField('municipality', v)}>
-                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800 border-slate-700">
-                          <SelectItem value="KwaDukuza">KwaDukuza</SelectItem>
-                          <SelectItem value="Mandeni">Mandeni</SelectItem>
-                          <SelectItem value="Ndwedwe">Ndwedwe</SelectItem>
-                          <SelectItem value="Maphumulo">Maphumulo</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-white">Ward Number</Label>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <Label className="text-white text-sm">Store Name *</Label>
                       <Input
-                        value={formData.ward}
-                        onChange={(e) => updateField('ward', e.target.value)}
-                        placeholder="e.g. 5"
+                        value={formData.shop_name}
+                        onChange={(e) => updateField('shop_name', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-white text-sm">Full Name *</Label>
+                      <Input
+                        value={formData.owner_name}
+                        onChange={(e) => updateField('owner_name', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-white text-sm">Email</Label>
+                        <Input
+                          type="email"
+                          value={formData.owner_email}
+                          onChange={(e) => updateField('owner_email', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-white text-sm">Contact Number</Label>
+                        <Input
+                          value={formData.phone_number}
+                          onChange={(e) => updateField('phone_number', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label className="text-white text-sm">Physical Address</Label>
+                      <Textarea
+                        value={formData.physical_address}
+                        onChange={(e) => updateField('physical_address', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white min-h-16"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-white text-sm">Municipality *</Label>
+                        <Select value={formData.municipality} onValueChange={(v) => updateField('municipality', v)}>
+                          <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-800 border-slate-700">
+                            <SelectItem value="KwaDukuza">KwaDukuza</SelectItem>
+                            <SelectItem value="Mandeni">Mandeni</SelectItem>
+                            <SelectItem value="Ndwedwe">Ndwedwe</SelectItem>
+                            <SelectItem value="Maphumulo">Maphumulo</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-white text-sm">Ward No.</Label>
+                        <Input
+                          value={formData.ward}
+                          onChange={(e) => updateField('ward', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={captureGPS}
+                      disabled={gpsLoading}
+                      className="w-full bg-cyan-600 hover:bg-cyan-700 text-white gap-2"
+                    >
+                      {gpsLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
+                      {gpsLoading ? 'Acquiring GPS...' : 'Capture GPS Location'}
+                    </Button>
+
+                    {formData.gps_latitude && (
+                      <div className="p-3 bg-slate-800 rounded-lg text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Coordinates</span>
+                          <span className="text-white font-mono text-xs">
+                            {formData.gps_latitude.toFixed(6)}, {formData.gps_longitude.toFixed(6)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Business Registration & Compliance */}
+              {currentStep === 2 && (
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <FileText className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Section 2: Business Registration & Compliance</h2>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                      <Label className="text-white">Registered with CIPC?</Label>
+                      <YesNoSelect 
+                        value={formData.is_cipc_registered ? 'yes' : formData.is_cipc_registered === false ? 'no' : ''} 
+                        onChange={(v) => updateField('is_cipc_registered', v === 'yes')} 
+                      />
+                    </div>
+
+                    {formData.is_cipc_registered && (
+                      <div className="space-y-1">
+                        <Label className="text-white text-sm">Registration No.</Label>
+                        <Input
+                          value={formData.cipc_number}
+                          onChange={(e) => updateField('cipc_number', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                      <Label className="text-white">Business bank account?</Label>
+                      <YesNoSelect 
+                        value={formData.has_business_bank_account ? 'yes' : formData.has_business_bank_account === false ? 'no' : ''} 
+                        onChange={(v) => updateField('has_business_bank_account', v === 'yes')} 
+                      />
+                    </div>
+
+                    {formData.has_business_bank_account && (
+                      <div className="space-y-1">
+                        <Label className="text-white text-sm">Bank Name</Label>
+                        <Input
+                          value={formData.bank_name}
+                          onChange={(e) => updateField('bank_name', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                      <Label className="text-white">Municipal CoA for Food Handling?</Label>
+                      <YesNoSelect 
+                        value={formData.has_coa ? 'yes' : formData.has_coa === false ? 'no' : ''} 
+                        onChange={(v) => updateField('has_coa', v === 'yes')} 
+                      />
+                    </div>
+
+                    {formData.has_coa && (
+                      <div className="space-y-1">
+                        <Label className="text-white text-sm">CoA No.</Label>
+                        <Input
+                          value={formData.coa_number}
+                          onChange={(e) => updateField('coa_number', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Infrastructure & Operations */}
+              {currentStep === 3 && (
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <Building className="w-10 h-10 text-amber-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Section 3: Infrastructure & Operations</h2>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <Label className="text-white text-sm">Years operating</Label>
+                      <Input
+                        type="number"
+                        value={formData.years_operating}
+                        onChange={(e) => updateField('years_operating', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white text-sm">Type of structure</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { value: 'container', label: 'Container' },
+                          { value: 'temporary', label: 'Temporary Structure' },
+                          { value: 'standalone', label: 'Stand-alone' },
+                          { value: 'residential', label: 'Residential Property' },
+                          { value: 'other', label: 'Other' }
+                        ].map(opt => (
+                          <CheckboxItem 
+                            key={opt.value}
+                            label={opt.label}
+                            checked={formData.structure_type === opt.value}
+                            onChange={() => updateField('structure_type', opt.value)}
+                          />
+                        ))}
+                      </div>
+                      {formData.structure_type === 'other' && (
+                        <Input
+                          placeholder="Specify..."
+                          value={formData.structure_type_other}
+                          onChange={(e) => updateField('structure_type_other', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white mt-2"
+                        />
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white text-sm">Shop size</Label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {['small', 'medium', 'large'].map(size => (
+                          <CheckboxItem 
+                            key={size}
+                            label={size.charAt(0).toUpperCase() + size.slice(1)}
+                            checked={formData.shop_size === size}
+                            onChange={() => updateField('shop_size', size)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white text-sm">Storage (Select all that apply)</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { value: 'fridge', label: 'Fridge' },
+                          { value: 'freezer', label: 'Freezer' },
+                          { value: 'shelves', label: 'Shelves' },
+                          { value: 'other', label: 'Other' }
+                        ].map(opt => (
+                          <CheckboxItem 
+                            key={opt.value}
+                            label={opt.label}
+                            checked={formData.storage_types.includes(opt.value)}
+                            onChange={() => toggleArrayField('storage_types', opt.value)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white text-sm">Products (Select all that apply)</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { value: 'groceries', label: 'Groceries' },
+                          { value: 'beverages', label: 'Beverages' },
+                          { value: 'snacks', label: 'Snacks' },
+                          { value: 'bread', label: 'Bread' },
+                          { value: 'dairy', label: 'Dairy' },
+                          { value: 'fresh_produce', label: 'Fresh Produce' },
+                          { value: 'cooked_food', label: 'Cooked Food' },
+                          { value: 'airtime', label: 'Airtime' },
+                          { value: 'other', label: 'Other' }
+                        ].map(opt => (
+                          <CheckboxItem 
+                            key={opt.value}
+                            label={opt.label}
+                            checked={formData.products_sold.includes(opt.value)}
+                            onChange={() => toggleArrayField('products_sold', opt.value)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: General Hygiene */}
+              {currentStep === 4 && (
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <ShieldCheck className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Section 4: General Hygiene</h2>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { field: 'hygiene_overall_cleanliness', label: 'Acceptable Overall Cleanliness' },
+                      { field: 'hygiene_no_dust_dirt', label: 'No Excessive Dust and/or Dirt on Surfaces' },
+                      { field: 'hygiene_handwashing', label: 'Hand-washing' },
+                      { field: 'hygiene_animals_pets', label: 'Animals/Pets on Premises' }
+                    ].map(item => (
+                      <div key={item.field} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                        <Label className="text-white text-sm">{item.label}</Label>
+                        <YesNoSelect 
+                          value={formData[item.field] === true ? 'yes' : formData[item.field] === false ? 'no' : ''} 
+                          onChange={(v) => updateField(item.field, v === 'yes')} 
+                        />
+                      </div>
+                    ))}
+
+                    <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                      <Label className="text-white text-sm">Acceptable Waste Usage</Label>
+                      <YesNoSelect 
+                        value={formData.hygiene_waste_usage} 
+                        onChange={(v) => updateField('hygiene_waste_usage', v)} 
+                        includeOther
+                      />
+                    </div>
+
+                    {formData.hygiene_waste_usage === 'other' && (
+                      <Input
+                        placeholder="Specify..."
+                        value={formData.hygiene_waste_other}
+                        onChange={(e) => updateField('hygiene_waste_other', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white"
+                      />
+                    )}
+
+                    <div className="space-y-1">
+                      <Label className="text-white text-sm">Other (Specify)</Label>
+                      <Input
+                        value={formData.hygiene_other}
+                        onChange={(e) => updateField('hygiene_other', e.target.value)}
                         className="bg-slate-800 border-slate-700 text-white"
                       />
                     </div>
@@ -404,596 +697,309 @@ export default function NewShop() {
                 </div>
               )}
 
-              {/* Step 2: Owner Info */}
-              {currentStep === 2 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <User className="w-12 h-12 text-cyan-500 mx-auto mb-3" />
-                    <h2 className="text-xl font-semibold text-white">Owner Information</h2>
-                    <p className="text-slate-400 text-sm">Capture owner details & demographics</p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-white">Shop Name *</Label>
-                      <Input
-                        value={formData.shop_name}
-                        onChange={(e) => updateField('shop_name', e.target.value)}
-                        placeholder="e.g. Mama's Spaza"
-                        className="bg-slate-800 border-slate-700 text-white h-12"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-white">Owner Full Name *</Label>
-                      <Input
-                        value={formData.owner_name}
-                        onChange={(e) => updateField('owner_name', e.target.value)}
-                        placeholder="Full name as per ID"
-                        className="bg-slate-800 border-slate-700 text-white h-12"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-white">Nationality</Label>
-                        <Select value={formData.owner_nationality} onValueChange={(v) => updateField('owner_nationality', v)}>
-                          <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            <SelectItem value="south_african">🇿🇦 South African</SelectItem>
-                            <SelectItem value="zimbabwean">🇿🇼 Zimbabwean</SelectItem>
-                            <SelectItem value="mozambican">🇲🇿 Mozambican</SelectItem>
-                            <SelectItem value="malawian">🇲🇼 Malawian</SelectItem>
-                            <SelectItem value="ethiopian">🇪🇹 Ethiopian</SelectItem>
-                            <SelectItem value="somali">🇸🇴 Somali</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-white">ID Number</Label>
-                        <Input
-                          value={formData.owner_id_number}
-                          onChange={(e) => updateField('owner_id_number', e.target.value)}
-                          placeholder="13-digit ID"
-                          className="bg-slate-800 border-slate-700 text-white"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-white">Gender</Label>
-                        <Select value={formData.owner_gender} onValueChange={(v) => updateField('owner_gender', v)}>
-                          <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            <SelectItem value="male">Male</SelectItem>
-                            <SelectItem value="female">Female</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-white">Age Group</Label>
-                        <Select value={formData.owner_age_group} onValueChange={(v) => updateField('owner_age_group', v)}>
-                          <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            <SelectItem value="18-25">18-25</SelectItem>
-                            <SelectItem value="26-35">26-35</SelectItem>
-                            <SelectItem value="36-45">36-45</SelectItem>
-                            <SelectItem value="46-55">46-55</SelectItem>
-                            <SelectItem value="56-65">56-65</SelectItem>
-                            <SelectItem value="65+">65+</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-white">PDG Classification</Label>
-                        <Select value={formData.owner_pdg_status} onValueChange={(v) => updateField('owner_pdg_status', v)}>
-                          <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            <SelectItem value="black_african">Black African</SelectItem>
-                            <SelectItem value="coloured">Coloured</SelectItem>
-                            <SelectItem value="indian_asian">Indian/Asian</SelectItem>
-                            <SelectItem value="white">White</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-white">Education Level</Label>
-                        <Select value={formData.owner_education_level} onValueChange={(v) => updateField('owner_education_level', v)}>
-                          <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            <SelectItem value="no_formal">No Formal Education</SelectItem>
-                            <SelectItem value="primary">Primary School</SelectItem>
-                            <SelectItem value="secondary">Secondary School</SelectItem>
-                            <SelectItem value="matric">Matric</SelectItem>
-                            <SelectItem value="diploma">Diploma/Certificate</SelectItem>
-                            <SelectItem value="degree">Degree</SelectItem>
-                            <SelectItem value="postgraduate">Postgraduate</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-white">Phone Number</Label>
-                      <Input
-                        value={formData.phone_number}
-                        onChange={(e) => updateField('phone_number', e.target.value)}
-                        placeholder="e.g. 0821234567"
-                        className="bg-slate-800 border-slate-700 text-white h-12"
-                      />
-                    </div>
-
-                    <div className="space-y-4 p-4 bg-slate-800/50 rounded-lg">
-                      <Label className="text-white font-medium">Special Categories</Label>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-slate-300">Youth-Owned (18-35 years)</Label>
-                          <Checkbox
-                            checked={formData.owner_youth_status}
-                            onCheckedChange={(checked) => updateField('owner_youth_status', checked)}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Label className="text-slate-300">Woman-Owned Business</Label>
-                          <Checkbox
-                            checked={formData.owner_woman_owned}
-                            onCheckedChange={(checked) => updateField('owner_woman_owned', checked)}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Label className="text-slate-300">Owner has Disability</Label>
-                          <Checkbox
-                            checked={formData.owner_disability_status}
-                            onCheckedChange={(checked) => updateField('owner_disability_status', checked)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Land & Tenure */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <Home className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                    <h2 className="text-xl font-semibold text-white">Land Ownership & Tenure</h2>
-                    <p className="text-slate-400 text-sm">Tenure security assessment</p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-white">Land Ownership Type</Label>
-                      <Select value={formData.land_ownership_type} onValueChange={(v) => updateField('land_ownership_type', v)}>
-                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white h-12">
-                          <SelectValue placeholder="Select ownership type" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800 border-slate-700">
-                          <SelectItem value="owned_freehold">Owned - Freehold Title</SelectItem>
-                          <SelectItem value="owned_traditional">Owned - Traditional/Communal</SelectItem>
-                          <SelectItem value="leased_formal">Leased - Formal Agreement</SelectItem>
-                          <SelectItem value="leased_informal">Leased - Informal Agreement</SelectItem>
-                          <SelectItem value="family_land">Family Land</SelectItem>
-                          <SelectItem value="municipal_land">Municipal Land</SelectItem>
-                          <SelectItem value="informal_occupation">Informal Occupation</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-white">Tenure Security Status</Label>
-                      <Select value={formData.tenure_security_status} onValueChange={(v) => updateField('tenure_security_status', v)}>
-                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white h-12">
-                          <SelectValue placeholder="Select security level" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800 border-slate-700">
-                          <SelectItem value="secure_title_deed">Secure - Title Deed</SelectItem>
-                          <SelectItem value="secure_lease">Secure - Long-term Lease</SelectItem>
-                          <SelectItem value="moderately_secure">Moderately Secure</SelectItem>
-                          <SelectItem value="insecure">Insecure</SelectItem>
-                          <SelectItem value="highly_insecure">Highly Insecure</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-3">
-                      <Label className="text-white">Tenure Documentation</Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {[
-                          { value: 'title_deed', label: 'Title Deed' },
-                          { value: 'lease_agreement', label: 'Lease Agreement' },
-                          { value: 'permission_to_occupy', label: 'Permission to Occupy' },
-                          { value: 'tribal_authority_letter', label: 'Tribal Authority Letter' },
-                          { value: 'municipal_permit', label: 'Municipal Permit' },
-                          { value: 'none', label: 'No Documentation' }
-                        ].map(doc => (
-                          <div
-                            key={doc.value}
-                            onClick={() => toggleArrayField('tenure_documentation', doc.value)}
-                            className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                              formData.tenure_documentation.includes(doc.value)
-                                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
-                                : 'bg-slate-800 border-slate-700 text-slate-400'
-                            }`}
-                          >
-                            <span className="text-sm">{doc.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {(formData.land_ownership_type === 'leased_formal' || formData.land_ownership_type === 'leased_informal') && (
-                      <div className="space-y-2">
-                        <Label className="text-white">Monthly Rent (ZAR)</Label>
-                        <Input
-                          type="number"
-                          value={formData.monthly_rent}
-                          onChange={(e) => updateField('monthly_rent', e.target.value)}
-                          placeholder="e.g. 2500"
-                          className="bg-slate-800 border-slate-700 text-white h-12"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Employees */}
-              {currentStep === 4 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <Users className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-                    <h2 className="text-xl font-semibold text-white">Employee Information</h2>
-                    <p className="text-slate-400 text-sm">Staff demographics & education</p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-white">Total Employees</Label>
-                        <Input
-                          type="number"
-                          value={formData.num_employees}
-                          onChange={(e) => updateField('num_employees', parseInt(e.target.value) || 0)}
-                          className="bg-slate-800 border-slate-700 text-white h-12"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-white">Full-time</Label>
-                        <Input
-                          type="number"
-                          value={formData.num_employees_fulltime}
-                          onChange={(e) => updateField('num_employees_fulltime', parseInt(e.target.value) || 0)}
-                          className="bg-slate-800 border-slate-700 text-white h-12"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-white">Part-time</Label>
-                        <Input
-                          type="number"
-                          value={formData.num_employees_parttime}
-                          onChange={(e) => updateField('num_employees_parttime', parseInt(e.target.value) || 0)}
-                          className="bg-slate-800 border-slate-700 text-white h-12"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-slate-800/50 rounded-lg space-y-4">
-                      <Label className="text-white font-medium">Gender & Demographics</Label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-slate-400 text-sm">Male</Label>
-                          <Input
-                            type="number"
-                            value={formData.num_employees_male}
-                            onChange={(e) => updateField('num_employees_male', parseInt(e.target.value) || 0)}
-                            className="bg-slate-700 border-slate-600 text-white"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-slate-400 text-sm">Female</Label>
-                          <Input
-                            type="number"
-                            value={formData.num_employees_female}
-                            onChange={(e) => updateField('num_employees_female', parseInt(e.target.value) || 0)}
-                            className="bg-slate-700 border-slate-600 text-white"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-slate-400 text-sm">Youth (18-35)</Label>
-                          <Input
-                            type="number"
-                            value={formData.num_employees_youth}
-                            onChange={(e) => updateField('num_employees_youth', parseInt(e.target.value) || 0)}
-                            className="bg-slate-700 border-slate-600 text-white"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-slate-400 text-sm">With Disabilities</Label>
-                          <Input
-                            type="number"
-                            value={formData.num_employees_disabled}
-                            onChange={(e) => updateField('num_employees_disabled', parseInt(e.target.value) || 0)}
-                            className="bg-slate-700 border-slate-600 text-white"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-slate-800/50 rounded-lg space-y-4">
-                      <Label className="text-white font-medium">PDG Classification</Label>
-                      <div className="grid grid-cols-2 gap-4">
-                        {[
-                          { key: 'black_african', label: 'Black African' },
-                          { key: 'coloured', label: 'Coloured' },
-                          { key: 'indian_asian', label: 'Indian/Asian' },
-                          { key: 'white', label: 'White' },
-                          { key: 'other', label: 'Other' }
-                        ].map(pdg => (
-                          <div key={pdg.key} className="space-y-2">
-                            <Label className="text-slate-400 text-sm">{pdg.label}</Label>
-                            <Input
-                              type="number"
-                              value={formData.employees_pdg_breakdown[pdg.key]}
-                              onChange={(e) => updatePdgBreakdown(pdg.key, e.target.value)}
-                              className="bg-slate-700 border-slate-600 text-white"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-slate-800/50 rounded-lg space-y-4">
-                      <Label className="text-white font-medium">Education Levels</Label>
-                      <div className="grid grid-cols-2 gap-4">
-                        {[
-                          { key: 'no_formal', label: 'No Formal' },
-                          { key: 'primary', label: 'Primary' },
-                          { key: 'secondary', label: 'Secondary' },
-                          { key: 'matric', label: 'Matric' },
-                          { key: 'tertiary', label: 'Tertiary' }
-                        ].map(edu => (
-                          <div key={edu.key} className="space-y-2">
-                            <Label className="text-slate-400 text-sm">{edu.label}</Label>
-                            <Input
-                              type="number"
-                              value={formData.employees_education_breakdown[edu.key]}
-                              onChange={(e) => updateEducationBreakdown(edu.key, e.target.value)}
-                              className="bg-slate-700 border-slate-600 text-white"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 5: Shop Details */}
+              {/* Step 5: Food Safety */}
               {currentStep === 5 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <Store className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-                    <h2 className="text-xl font-semibold text-white">Shop Details</h2>
-                    <p className="text-slate-400 text-sm">Business characteristics</p>
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <Utensils className="w-10 h-10 text-red-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Section 5: Food Safety</h2>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-white">Structure Type *</Label>
-                      <Select value={formData.structure_type} onValueChange={(v) => updateField('structure_type', v)}>
-                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white h-12">
-                          <SelectValue placeholder="Select structure type" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800 border-slate-700">
-                          <SelectItem value="brick">Brick Building</SelectItem>
-                          <SelectItem value="container">Container</SelectItem>
-                          <SelectItem value="zinc">Zinc/Corrugated Iron</SelectItem>
-                          <SelectItem value="prefab">Prefabricated</SelectItem>
-                          <SelectItem value="mixed">Mixed Materials</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="space-y-3">
+                    {[
+                      { field: 'food_stored_on_floor', label: 'Food Stored Directly on Floor' },
+                      { field: 'food_expired_damaged', label: 'Expired, Damaged, Dented Food Containers on Shelves' },
+                      { field: 'food_within_expiry', label: 'Food Items Labelled within Expiry Date' },
+                      { field: 'food_separated', label: 'Food & non-food items stored separately' }
+                    ].map(item => (
+                      <div key={item.field} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                        <Label className="text-white text-sm flex-1 mr-2">{item.label}</Label>
+                        <YesNoSelect 
+                          value={formData[item.field] === true ? 'yes' : formData[item.field] === false ? 'no' : ''} 
+                          onChange={(v) => updateField(item.field, v === 'yes')} 
+                        />
+                      </div>
+                    ))}
 
-                    <div className="space-y-2">
-                      <Label className="text-white">Months in Operation</Label>
+                    <div className="space-y-1">
+                      <Label className="text-white text-sm">Other (Specify)</Label>
                       <Input
-                        type="number"
-                        value={formData.trading_months}
-                        onChange={(e) => updateField('trading_months', e.target.value)}
-                        placeholder="e.g. 24"
-                        className="bg-slate-800 border-slate-700 text-white h-12"
+                        value={formData.food_safety_other}
+                        onChange={(e) => updateField('food_safety_other', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white"
                       />
-                    </div>
-
-                    <div className="space-y-3">
-                      <Label className="text-white">Services Offered</Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {['airtime', 'electricity', 'money_transfer', 'lottery', 'parcel_collection'].map(service => (
-                          <div
-                            key={service}
-                            onClick={() => toggleArrayField('services', service)}
-                            className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                              formData.services.includes(service)
-                                ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-                                : 'bg-slate-800 border-slate-700 text-slate-400'
-                            }`}
-                          >
-                            <span className="capitalize text-sm">{service.replace('_', ' ')}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <Label className="text-white">Stock Categories</Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {['perishables', 'dry_goods', 'beverages', 'tobacco', 'toiletries', 'baby_products'].map(cat => (
-                          <div
-                            key={cat}
-                            onClick={() => toggleArrayField('stock_categories', cat)}
-                            className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                              formData.stock_categories.includes(cat)
-                                ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
-                                : 'bg-slate-800 border-slate-700 text-slate-400'
-                            }`}
-                          >
-                            <span className="capitalize text-sm">{cat.replace('_', ' ')}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Step 6: Documents */}
+              {/* Step 6: General & Safety Requirements */}
               {currentStep === 6 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <FileText className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                    <h2 className="text-xl font-semibold text-white">Documentation</h2>
-                    <p className="text-slate-400 text-sm">Funding eligibility info</p>
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <ClipboardList className="w-10 h-10 text-amber-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Section 6: General & Safety Requirements</h2>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { field: 'safety_lighting_ventilation', label: 'Acceptable Lighting & Ventilation' },
+                      { field: 'safety_floors_walls_ceiling', label: 'Acceptable Floors, Walls & Ceiling' },
+                      { field: 'safety_cleaning_materials', label: 'Cleaning Materials on Site' },
+                      { field: 'safety_signage_hazards', label: 'Safety Signage & Hazards' },
+                      { field: 'safety_disability_accessible', label: 'Disability Accessible' },
+                      { field: 'safety_not_living_space', label: 'Shop not used for sleeping or living purposes' }
+                    ].map(item => (
+                      <div key={item.field} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                        <Label className="text-white text-sm flex-1 mr-2">{item.label}</Label>
+                        <YesNoSelect 
+                          value={formData[item.field] === true ? 'yes' : formData[item.field] === false ? 'no' : ''} 
+                          onChange={(v) => updateField(item.field, v === 'yes')} 
+                        />
+                      </div>
+                    ))}
+
+                    <div className="space-y-1">
+                      <Label className="text-white text-sm">YMS Observations</Label>
+                      <Textarea
+                        value={formData.yms_observations}
+                        onChange={(e) => updateField('yms_observations', e.target.value)}
+                        placeholder="Field agent observations..."
+                        className="bg-slate-800 border-slate-700 text-white min-h-24"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 7: Business Development */}
+              {currentStep === 7 && (
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <CreditCard className="w-10 h-10 text-cyan-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Part 2: Business Development</h2>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Section A: Digital & Payment */}
+                    <div className="p-3 bg-slate-800/30 rounded-lg">
+                      <h3 className="text-cyan-400 text-sm font-medium mb-3">Section A: Digital & Payment Systems</h3>
                       <div className="space-y-2">
-                        <Label className="text-white">Trading Permit #</Label>
-                        <Input
-                          value={formData.trading_permit_number}
-                          onChange={(e) => updateField('trading_permit_number', e.target.value)}
-                          className="bg-slate-800 border-slate-700 text-white"
-                        />
+                        <Label className="text-white text-sm">Payments</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {['cash', 'card', 'eft', 'mobile'].map(method => (
+                            <CheckboxItem 
+                              key={method}
+                              label={method.toUpperCase()}
+                              checked={formData.payment_methods.includes(method)}
+                              onChange={() => toggleArrayField('payment_methods', method)}
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-white">Permit Expiry</Label>
-                        <Input
-                          type="date"
-                          value={formData.trading_permit_expiry}
-                          onChange={(e) => updateField('trading_permit_expiry', e.target.value)}
-                          className="bg-slate-800 border-slate-700 text-white"
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg mt-3">
+                        <Label className="text-white text-sm">Point Of Sale (POS) system?</Label>
+                        <YesNoSelect 
+                          value={formData.has_pos_system === true ? 'yes' : formData.has_pos_system === false ? 'no' : ''} 
+                          onChange={(v) => updateField('has_pos_system', v === 'yes')} 
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-4 p-4 bg-slate-800/50 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-white">Has Certificate of Acceptability (CoA)?</Label>
-                        <Checkbox
-                          checked={formData.has_coa}
-                          onCheckedChange={(checked) => updateField('has_coa', checked)}
+                    {/* Section B: Ordering */}
+                    <div className="p-3 bg-slate-800/30 rounded-lg">
+                      <h3 className="text-cyan-400 text-sm font-medium mb-3">Section B: Ordering, Delivery & Collection</h3>
+                      <div className="space-y-2">
+                        <Label className="text-white text-sm">Where do you order?</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { value: 'cash_and_carry', label: 'Cash & Carry' },
+                            { value: 'local', label: 'Local' },
+                            { value: 'informal', label: 'Informal' },
+                            { value: 'group_buying', label: 'Group buying' }
+                          ].map(opt => (
+                            <CheckboxItem 
+                              key={opt.value}
+                              label={opt.label}
+                              checked={formData.ordering_sources.includes(opt.value)}
+                              onChange={() => toggleArrayField('ordering_sources', opt.value)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg mt-3">
+                        <Label className="text-white text-sm">Do you make deliveries?</Label>
+                        <YesNoSelect 
+                          value={formData.makes_deliveries === true ? 'yes' : formData.makes_deliveries === false ? 'no' : ''} 
+                          onChange={(v) => updateField('makes_deliveries', v === 'yes')} 
                         />
                       </div>
-                      {formData.has_coa && (
-                        <div className="grid grid-cols-2 gap-4">
-                          <Input
-                            placeholder="CoA Number"
-                            value={formData.coa_number}
-                            onChange={(e) => updateField('coa_number', e.target.value)}
-                            className="bg-slate-800 border-slate-700 text-white"
-                          />
-                          <Input
-                            type="date"
-                            placeholder="Expiry"
-                            value={formData.coa_expiry}
-                            onChange={(e) => updateField('coa_expiry', e.target.value)}
-                            className="bg-slate-800 border-slate-700 text-white"
-                          />
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg mt-2">
+                        <Label className="text-white text-sm">Can customers order and collect?</Label>
+                        <YesNoSelect 
+                          value={formData.customers_can_collect === true ? 'yes' : formData.customers_can_collect === false ? 'no' : ''} 
+                          onChange={(v) => updateField('customers_can_collect', v === 'yes')} 
+                        />
+                      </div>
+                      {formData.customers_can_collect && (
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {['phone_call', 'online'].map(method => (
+                            <CheckboxItem 
+                              key={method}
+                              label={method === 'phone_call' ? 'Phone Call' : 'Online'}
+                              checked={formData.collection_methods.includes(method)}
+                              onChange={() => toggleArrayField('collection_methods', method)}
+                            />
+                          ))}
                         </div>
                       )}
                     </div>
 
-                    <div className="space-y-4 p-4 bg-slate-800/50 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-white">Has Business Bank Account?</Label>
-                        <Checkbox
-                          checked={formData.has_business_bank_account}
-                          onCheckedChange={(checked) => updateField('has_business_bank_account', checked)}
-                        />
+                    {/* Section C: Community Service */}
+                    <div className="p-3 bg-slate-800/30 rounded-lg">
+                      <h3 className="text-cyan-400 text-sm font-medium mb-3">Section C: Community Service Potential</h3>
+                      <div className="space-y-2">
+                        <Label className="text-white text-sm">Collection point for:</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { value: 'medication', label: 'Medication' },
+                            { value: 'govt_parcels', label: 'Govt parcels' },
+                            { value: 'ecommerce', label: 'E-commerce' },
+                            { value: 'none', label: 'No' }
+                          ].map(opt => (
+                            <CheckboxItem 
+                              key={opt.value}
+                              label={opt.label}
+                              checked={formData.collection_point_services.includes(opt.value)}
+                              onChange={() => toggleArrayField('collection_point_services', opt.value)}
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <Label className="text-white">Registered with SARS?</Label>
-                        <Checkbox
-                          checked={formData.is_sars_registered}
-                          onCheckedChange={(checked) => updateField('is_sars_registered', checked)}
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg mt-3">
+                        <Label className="text-white text-sm">Space & security adequate?</Label>
+                        <YesNoSelect 
+                          value={formData.space_security_adequate === true ? 'yes' : formData.space_security_adequate === false ? 'no' : ''} 
+                          onChange={(v) => updateField('space_security_adequate', v === 'yes')} 
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label className="text-white">CIPC Registration Number</Label>
-                      <Input
-                        value={formData.cipc_number}
-                        onChange={(e) => updateField('cipc_number', e.target.value)}
-                        placeholder="If registered"
-                        className="bg-slate-800 border-slate-700 text-white"
-                      />
+                    {/* Section D: Business Activity */}
+                    <div className="p-3 bg-slate-800/30 rounded-lg">
+                      <h3 className="text-cyan-400 text-sm font-medium mb-3">Section D: Business Activity & Support Needs</h3>
+                      <div className="space-y-2">
+                        <Label className="text-white text-sm">Monthly turnover</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { value: 'less_than_5k', label: '<R5k' },
+                            { value: '5k_to_10k', label: 'R5k–R10k' },
+                            { value: 'more_than_10k', label: '>R10k' }
+                          ].map(opt => (
+                            <CheckboxItem 
+                              key={opt.value}
+                              label={opt.label}
+                              checked={formData.monthly_turnover === opt.value}
+                              onChange={() => updateField('monthly_turnover', opt.value)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-1 mt-3">
+                        <Label className="text-white text-sm">No. of Employees</Label>
+                        <Input
+                          type="number"
+                          value={formData.num_employees}
+                          onChange={(e) => updateField('num_employees', e.target.value)}
+                          className="bg-slate-800 border-slate-700 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2 mt-3">
+                        <Label className="text-white text-sm">Support needed</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { value: 'registration', label: 'Registration' },
+                            { value: 'banking', label: 'Banking' },
+                            { value: 'food_safety', label: 'Food Safety' },
+                            { value: 'equipment', label: 'Equipment' },
+                            { value: 'pos', label: 'POS' }
+                          ].map(opt => (
+                            <CheckboxItem 
+                              key={opt.value}
+                              label={opt.label}
+                              checked={formData.support_needed.includes(opt.value)}
+                              onChange={() => toggleArrayField('support_needed', opt.value)}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Step 7: Photos & Consent */}
-              {currentStep === 7 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <Camera className="w-12 h-12 text-red-500 mx-auto mb-3" />
-                    <h2 className="text-xl font-semibold text-white">Photos & Consent</h2>
-                    <p className="text-slate-400 text-sm">Visual evidence capture</p>
+              {/* Step 8: NEF Grant Eligibility */}
+              {currentStep === 8 && (
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <Award className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Section E: Spaza Shop NEF Grant Eligibility</h2>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3">
+                    {[
+                      { field: 'nef_sa_citizen_valid_id', label: 'South African citizen with valid ID' },
+                      { field: 'nef_cipc_registered', label: 'Registered business with CIPC' },
+                      { field: 'nef_bank_account_willing', label: 'Business bank account (or willing to open one)' },
+                      { field: 'nef_sars_registered_willing', label: 'SARS Tax Number (or willing to register)' },
+                      { field: 'nef_valid_coa', label: 'Valid Municipal COA for food handling' },
+                      { field: 'nef_fixed_structure', label: 'Operates from a fixed structure' },
+                      { field: 'nef_min_6_months', label: 'In operation for at least 6 months' },
+                      { field: 'nef_basic_hygiene', label: 'Comply with basic hygiene standards' },
+                      { field: 'nef_willing_training', label: 'Willing to participate in training/support' },
+                      { field: 'nef_growth_potential', label: 'Demonstrates potential to sustain and grow' }
+                    ].map(item => (
+                      <div key={item.field} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                        <Label className="text-white text-sm flex-1 mr-2">{item.label}</Label>
+                        <YesNoSelect 
+                          value={formData[item.field] === true ? 'yes' : formData[item.field] === false ? 'no' : ''} 
+                          onChange={(v) => updateField(item.field, v === 'yes')} 
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Step 9: Photos & Declaration */}
+              {currentStep === 9 && (
+                <div className="space-y-4">
+                  <div className="text-center mb-4">
+                    <Camera className="w-10 h-10 text-red-500 mx-auto mb-2" />
+                    <h2 className="text-lg font-semibold text-white">Photos & Declaration</h2>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
                     <PhotoUpload
-                      label="Shop Front Photo"
+                      label="Shop Front"
                       value={formData.shop_photo_url}
                       onChange={(url) => updateField('shop_photo_url', url)}
-                      description="Capture shop signage and entrance"
                     />
                     <PhotoUpload
-                      label="Owner Photo"
-                      value={formData.owner_photo_url}
-                      onChange={(url) => updateField('owner_photo_url', url)}
-                      description="Photo of the owner"
-                    />
-                    <PhotoUpload
-                      label="Interior Photo"
+                      label="Interior"
                       value={formData.interior_photo_url}
                       onChange={(url) => updateField('interior_photo_url', url)}
-                      description="Show stock and interior condition"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-white">Notes</Label>
-                    <Textarea
-                      value={formData.notes}
-                      onChange={(e) => updateField('notes', e.target.value)}
-                      placeholder="Any additional observations..."
-                      className="bg-slate-800 border-slate-700 text-white min-h-20"
-                    />
-                  </div>
+                  <PhotoUpload
+                    label="Owner Photo"
+                    value={formData.owner_photo_url}
+                    onChange={(url) => updateField('owner_photo_url', url)}
+                  />
 
                   <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                    <h3 className="text-white font-medium mb-3">Section F: Declaration</h3>
                     <div className="flex items-start gap-3">
                       <Checkbox
                         id="consent"
@@ -1002,7 +1008,7 @@ export default function NewShop() {
                         className="mt-1"
                       />
                       <label htmlFor="consent" className="text-sm text-slate-300 cursor-pointer">
-                        <strong className="text-white">POPIA Consent:</strong> The shop owner has consented to the collection and processing of their personal data for compliance monitoring and funding eligibility assessment purposes.
+                        The shop owner has consented to the collection and processing of their personal data for compliance monitoring and NEF funding eligibility assessment purposes.
                       </label>
                     </div>
                   </div>
@@ -1012,7 +1018,7 @@ export default function NewShop() {
           </AnimatePresence>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-slate-700">
+          <div className="flex justify-between mt-6 pt-4 border-t border-slate-700">
             <Button
               variant="outline"
               onClick={() => setCurrentStep(prev => prev - 1)}
@@ -1043,7 +1049,7 @@ export default function NewShop() {
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" />
-                    Save Shop
+                    Submit
                   </>
                 )}
               </Button>
@@ -1053,8 +1059,11 @@ export default function NewShop() {
       </Card>
 
       {/* Footer */}
-      <div className="mt-8 text-center">
-        <p className="text-slate-500 text-sm">
+      <div className="mt-6 text-center">
+        <p className="text-slate-600 text-xs">
+          YMS-SEF: Final_Spaza_Shop_Assessment_Form
+        </p>
+        <p className="text-slate-500 text-xs mt-1">
           Powered by <span className="text-cyan-400 font-semibold">Kelestone Capital</span>
         </p>
       </div>
