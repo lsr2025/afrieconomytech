@@ -151,8 +151,8 @@ export default function Layout({ children, currentPageName }) {
 
         {/* User Profile */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-800 bg-slate-950/50">
-          {user ?
-          <div className="flex items-center gap-3">
+          {user ? (
+            <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center">
                 <span className="text-white font-semibold">
                   {user.full_name?.[0] || user.email?.[0] || 'U'}
