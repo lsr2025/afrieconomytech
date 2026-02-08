@@ -15,7 +15,7 @@ import {
   Plus,
   Users,
   Shield,
-  DollarSign,
+  Banknote,
   ArrowRight,
   Activity } from
 'lucide-react';
@@ -284,7 +284,7 @@ export default function Dashboard() {
           title="Funding Ready"
           value={fundingReady}
           subtitle="Eligible for NEF support"
-          icon={DollarSign}
+          icon={Banknote}
           color="bg-amber-500" />
 
         <StatCard
