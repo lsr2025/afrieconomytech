@@ -55,8 +55,8 @@ export default function Layout({ children, currentPageName }) {
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="text-white"
-            >
+              className="text-white">
+
               <Menu className="w-6 h-6" />
             </Button>
             <div>
@@ -76,27 +76,27 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/60 z-50"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      {sidebarOpen &&
+      <div
+        className="lg:hidden fixed inset-0 bg-black/60 z-50"
+        onClick={() => setSidebarOpen(false)} />
+
+      }
 
       {/* Sidebar */}
-      <aside className={`
-        fixed top-0 left-0 h-full z-50 w-72
-        bg-gradient-to-b from-slate-900 to-slate-950 border-r border-slate-800
-        transform transition-transform duration-300 ease-in-out
-        lg:translate-x-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+      <aside className="bg-slate-100 fixed top-0 left-0 h-full z-50 w-72 from-slate-900 to-slate-950 border-r border-slate-800 transform transition-transform duration-300 ease-in-out lg:translate-x-0 translate-x-0">
+
+
+
+
+
+
         {/* Logo */}
         <div className="p-6 border-b border-slate-800">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-white tracking-tight">
-                <span className="text-red-500">Yami</span>Mine
+                <span className="text-sky-900">Yami</span>Mine
               </h1>
               <p className="text-xs text-slate-400 mt-0.5">Spaza Compliance & Funding</p>
             </div>
@@ -112,7 +112,7 @@ export default function Layout({ children, currentPageName }) {
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-2">
+        <nav className="bg-slate-100 p-4 space-y-2">
           {navItems.map((item) => {
             const isActive = currentPageName === item.page;
             const Icon = item.icon;
@@ -120,16 +120,16 @@ export default function Layout({ children, currentPageName }) {
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <div className={`
-                  flex items-center gap-3 px-4 py-3 rounded-xl transition-all
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-red-600/20 to-transparent text-white border-l-4 border-red-500' 
-                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
-                  }
-                `}>
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-red-400' : ''}`} />
+                onClick={() => setSidebarOpen(false)}>
+
+                <div className="bg-slate-200 text-white px-4 py-3 rounded-xl flex items-center gap-3 transition-all from-red-600/20 to-transparent border-l-4 border-red-500">
+
+
+
+
+
+
+                  <Icon className="bg-slate-950 text-gray-600 lucide lucide-layout-dashboard w-5 h-5" />
                   <span className="font-medium">{item.name}</span>
                   {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
                 </div>
@@ -151,8 +151,8 @@ export default function Layout({ children, currentPageName }) {
 
         {/* User Profile */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-800 bg-slate-950/50">
-          {user ? (
-            <div className="flex items-center gap-3">
+          {user ?
+          <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center">
                 <span className="text-white font-semibold">
                   {user.full_name?.[0] || user.email?.[0] || 'U'}
@@ -165,23 +165,23 @@ export default function Layout({ children, currentPageName }) {
                 </Badge>
               </div>
               <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLogout}
-                className="text-slate-400 hover:text-white hover:bg-slate-800"
-              >
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="text-slate-400 hover:text-white hover:bg-slate-800">
+
                 <LogOut className="w-4 h-4" />
               </Button>
-            </div>
-          ) : (
-            <div className="animate-pulse flex items-center gap-3">
+            </div> :
+
+          <div className="animate-pulse flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-slate-700" />
               <div className="flex-1 space-y-2">
                 <div className="h-3 w-24 bg-slate-700 rounded" />
                 <div className="h-2 w-16 bg-slate-700 rounded" />
               </div>
             </div>
-          )}
+          }
         </div>
       </aside>
 
