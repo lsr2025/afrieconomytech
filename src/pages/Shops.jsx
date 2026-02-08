@@ -139,10 +139,20 @@ export default function Shops() {
   const [municipalityFilter, setMunicipalityFilter] = useState('all');
   const [riskFilter, setRiskFilter] = useState('all');
 
-  const { data: shops = [], isLoading } = useQuery({
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me()
+  });
+
+  const { data: allShops = [], isLoading } = useQuery({
     queryKey: ['shops'],
     queryFn: () => base44.entities.Shop.list('-created_date', 200)
   });
+
+  // Field agents only see their own shops
+  const shops = user?.user_role === 'field_agent'
+    ? allShops.filter(s => s.created_by === user.email)
+    : allShops;
 
   const filteredShops = shops.filter(shop => {
     const matchesSearch = !searchQuery || 
