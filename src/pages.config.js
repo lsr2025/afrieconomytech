@@ -57,6 +57,7 @@ import ShopDetail from './pages/ShopDetail';
 import Shops from './pages/Shops';
 import HRDashboard from './pages/HRDashboard';
 import AttendanceTracking from './pages/AttendanceTracking';
+import AgentProfile from './pages/AgentProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +72,7 @@ export const PAGES = {
     "Shops": Shops,
     "HRDashboard": HRDashboard,
     "AttendanceTracking": AttendanceTracking,
+    "AgentProfile": AgentProfile,
 }
 
 export const pagesConfig = {
