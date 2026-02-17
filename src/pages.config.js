@@ -47,38 +47,48 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AgentProfile from './pages/AgentProfile';
 import Analytics from './pages/Analytics';
+import AttendanceTracking from './pages/AttendanceTracking';
 import Dashboard from './pages/Dashboard';
+import HRDashboard from './pages/HRDashboard';
 import Home from './pages/Home';
+import LeaveManagement from './pages/LeaveManagement';
 import MapView from './pages/MapView';
 import NewInspection from './pages/NewInspection';
 import NewShop from './pages/NewShop';
+import ShiftManagement from './pages/ShiftManagement';
 import ShopDetail from './pages/ShopDetail';
 import Shops from './pages/Shops';
-import HRDashboard from './pages/HRDashboard';
-import AttendanceTracking from './pages/AttendanceTracking';
-import AgentProfile from './pages/AgentProfile';
-import ShiftManagement from './pages/ShiftManagement';
-import LeaveManagement from './pages/LeaveManagement';
 import SuperDashboard from './pages/SuperDashboard';
+import MobileCheckIn from './pages/MobileCheckIn';
+import MobileLeave from './pages/MobileLeave';
+import MySchedule from './pages/MySchedule';
+import MyProfile from './pages/MyProfile';
+import MobileSupervisor from './pages/MobileSupervisor';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AgentProfile": AgentProfile,
     "Analytics": Analytics,
+    "AttendanceTracking": AttendanceTracking,
     "Dashboard": Dashboard,
+    "HRDashboard": HRDashboard,
     "Home": Home,
+    "LeaveManagement": LeaveManagement,
     "MapView": MapView,
     "NewInspection": NewInspection,
     "NewShop": NewShop,
+    "ShiftManagement": ShiftManagement,
     "ShopDetail": ShopDetail,
     "Shops": Shops,
-    "HRDashboard": HRDashboard,
-    "AttendanceTracking": AttendanceTracking,
-    "AgentProfile": AgentProfile,
-    "ShiftManagement": ShiftManagement,
-    "LeaveManagement": LeaveManagement,
     "SuperDashboard": SuperDashboard,
+    "MobileCheckIn": MobileCheckIn,
+    "MobileLeave": MobileLeave,
+    "MySchedule": MySchedule,
+    "MyProfile": MyProfile,
+    "MobileSupervisor": MobileSupervisor,
 }
 
 export const pagesConfig = {
