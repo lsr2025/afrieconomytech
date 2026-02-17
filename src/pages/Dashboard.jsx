@@ -274,18 +274,11 @@ export default function Dashboard() {
           trend={totalShops > 0 ? "+12% this week" : null} />
 
         <StatCard
-          title="Compliance Rate"
-          value={`${complianceRate}%`}
-          subtitle={`${compliantShops} shops compliant`}
-          icon={ClipboardCheck}
-          color="bg-emerald-500" />
-
-        <StatCard
           title="Funding Ready"
           value={fundingReady}
           subtitle="Eligible for NEF support"
           icon={DollarSign}
-          color="bg-amber-500" />
+          color="bg-emerald-500" />
 
         <StatCard
           title="Critical Risk"
