@@ -34,20 +34,48 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Notify district coordinator on key milestones (50% and 100%)
+    if (onboarding.district_coordinator_email && 
+        (onboarding.progress_percentage === 50 || onboarding.progress_percentage === 100)) {
+      await base44.asServiceRole.integrations.Core.SendEmail({
+        to: onboarding.district_coordinator_email,
+        subject: `Onboarding Milestone: ${agent_name} - ${onboarding.progress_percentage}% Complete`,
+        body: `
+          <h2>Onboarding Milestone Reached</h2>
+          <p>${agent_name} has reached ${onboarding.progress_percentage}% completion.</p>
+          <p>Latest task: <strong>${task_completed}</strong></p>
+          <p>Supervisor: ${onboarding.supervisor_name || 'Unassigned'}</p>
+        `
+      });
+    }
+
     // If onboarding is completed, send completion notification
     if (onboarding.status === 'completed') {
-      // Get all admin users
-      const users = await base44.asServiceRole.entities.User.list();
-      const admins = users.filter(u => u.role === 'admin');
+      // Notify executives and district coordinator
+      const executiveEmails = [
+        'nokukhanya.kamanga@yamimine.co.za', // COO
+        'fundi.madlala@yamimine.co.za'       // CEO
+      ];
 
-      for (const admin of admins) {
+      const recipients = [...executiveEmails];
+      if (onboarding.district_coordinator_email) {
+        recipients.push(onboarding.district_coordinator_email);
+      }
+      if (onboarding.supervisor_email) {
+        recipients.push(onboarding.supervisor_email);
+      }
+
+      for (const email of recipients) {
         await base44.asServiceRole.integrations.Core.SendEmail({
-          to: admin.email,
-          subject: `Onboarding Completed: ${agent_name}`,
+          to: email,
+          subject: `✅ Onboarding Completed: ${agent_name}`,
           body: `
-            <h2>🎉 Onboarding Completed</h2>
-            <p>${agent_name} has successfully completed the onboarding process!</p>
+            <h2>🎉 Onboarding Successfully Completed</h2>
+            <p><strong>${agent_name}</strong> has successfully completed the onboarding process!</p>
             <p>Completion date: ${new Date(onboarding.completion_date).toLocaleDateString()}</p>
+            <p>Supervisor: ${onboarding.supervisor_name || 'Unassigned'}</p>
+            <p>District Coordinator: ${onboarding.district_coordinator_name || 'Unassigned'}</p>
+            <br>
             <p>The new agent is now ready for field assignments.</p>
           `
         });

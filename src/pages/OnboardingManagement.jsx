@@ -28,8 +28,17 @@ export default function OnboardingManagement() {
   const [formData, setFormData] = useState({
     agent_email: '',
     start_date: '',
-    supervisor_email: ''
+    supervisor_email: '',
+    supervisor_name: '',
+    district_coordinator_name: '',
+    district_coordinator_email: ''
   });
+
+  const districtCoordinators = [
+    { name: 'Tholi Ncibane', email: 'tholi.ncibane@yamimine.co.za' },
+    { name: 'Dolly', email: 'dolly@yamimine.co.za' },
+    { name: 'Queen Soga', email: 'queen.soga@yamimine.co.za' }
+  ];
 
   const { data: agents = [] } = useQuery({
     queryKey: ['field-agents'],
@@ -52,9 +61,11 @@ export default function OnboardingManagement() {
   const createOnboarding = useMutation({
     mutationFn: async (data) => {
       const agent = agents.find(a => a.user_email === data.agent_email);
+      const supervisor = supervisors.find(s => s.email === data.supervisor_email);
       return await base44.entities.Onboarding.create({
         ...data,
         agent_name: agent?.full_name || '',
+        supervisor_name: supervisor?.full_name || supervisor?.email || '',
         status: 'not_started',
         progress_percentage: 0
       });
@@ -65,7 +76,10 @@ export default function OnboardingManagement() {
       setFormData({
         agent_email: '',
         start_date: '',
-        supervisor_email: ''
+        supervisor_email: '',
+        supervisor_name: '',
+        district_coordinator_name: '',
+        district_coordinator_email: ''
       });
     }
   });
@@ -143,6 +157,32 @@ export default function OnboardingManagement() {
                       {supervisors.map(supervisor => (
                         <SelectItem key={supervisor.id} value={supervisor.email}>
                           {supervisor.full_name || supervisor.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-white">District Coordinator</Label>
+                  <Select 
+                    value={formData.district_coordinator_name} 
+                    onValueChange={(v) => {
+                      const coordinator = districtCoordinators.find(dc => dc.name === v);
+                      setFormData(prev => ({ 
+                        ...prev, 
+                        district_coordinator_name: v,
+                        district_coordinator_email: coordinator?.email || ''
+                      }));
+                    }}
+                  >
+                    <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+                      <SelectValue placeholder="Select coordinator" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-700">
+                      {districtCoordinators.map(dc => (
+                        <SelectItem key={dc.name} value={dc.name}>
+                          {dc.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

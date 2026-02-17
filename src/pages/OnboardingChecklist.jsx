@@ -148,7 +148,15 @@ export default function OnboardingChecklist() {
           </Link>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-white">Onboarding Checklist</h1>
-            <p className="text-slate-400">{onboarding.agent_name}</p>
+            <div className="text-slate-400 text-sm">
+              <div>{onboarding.agent_name}</div>
+              {onboarding.supervisor_name && (
+                <div className="text-xs">Supervisor: {onboarding.supervisor_name}</div>
+              )}
+              {onboarding.district_coordinator_name && (
+                <div className="text-xs">DC: {onboarding.district_coordinator_name}</div>
+              )}
+            </div>
           </div>
           <Badge className={
             onboarding.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' :

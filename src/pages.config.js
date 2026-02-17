@@ -55,19 +55,19 @@ import HRDashboard from './pages/HRDashboard';
 import Home from './pages/Home';
 import LeaveManagement from './pages/LeaveManagement';
 import MapView from './pages/MapView';
+import MobileCheckIn from './pages/MobileCheckIn';
+import MobileLeave from './pages/MobileLeave';
+import MobileSupervisor from './pages/MobileSupervisor';
+import MyProfile from './pages/MyProfile';
+import MySchedule from './pages/MySchedule';
 import NewInspection from './pages/NewInspection';
 import NewShop from './pages/NewShop';
+import OnboardingChecklist from './pages/OnboardingChecklist';
+import OnboardingManagement from './pages/OnboardingManagement';
 import ShiftManagement from './pages/ShiftManagement';
 import ShopDetail from './pages/ShopDetail';
 import Shops from './pages/Shops';
 import SuperDashboard from './pages/SuperDashboard';
-import MobileCheckIn from './pages/MobileCheckIn';
-import MobileLeave from './pages/MobileLeave';
-import MySchedule from './pages/MySchedule';
-import MyProfile from './pages/MyProfile';
-import MobileSupervisor from './pages/MobileSupervisor';
-import OnboardingChecklist from './pages/OnboardingChecklist';
-import OnboardingManagement from './pages/OnboardingManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -80,19 +80,19 @@ export const PAGES = {
     "Home": Home,
     "LeaveManagement": LeaveManagement,
     "MapView": MapView,
+    "MobileCheckIn": MobileCheckIn,
+    "MobileLeave": MobileLeave,
+    "MobileSupervisor": MobileSupervisor,
+    "MyProfile": MyProfile,
+    "MySchedule": MySchedule,
     "NewInspection": NewInspection,
     "NewShop": NewShop,
+    "OnboardingChecklist": OnboardingChecklist,
+    "OnboardingManagement": OnboardingManagement,
     "ShiftManagement": ShiftManagement,
     "ShopDetail": ShopDetail,
     "Shops": Shops,
     "SuperDashboard": SuperDashboard,
-    "MobileCheckIn": MobileCheckIn,
-    "MobileLeave": MobileLeave,
-    "MySchedule": MySchedule,
-    "MyProfile": MyProfile,
-    "MobileSupervisor": MobileSupervisor,
-    "OnboardingChecklist": OnboardingChecklist,
-    "OnboardingManagement": OnboardingManagement,
 }
 
 export const pagesConfig = {
