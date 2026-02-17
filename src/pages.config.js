@@ -71,6 +71,7 @@ import SuperDashboard from './pages/SuperDashboard';
 import TeamManagement from './pages/TeamManagement';
 import TaskAssignment from './pages/TaskAssignment';
 import TaskMonitoring from './pages/TaskMonitoring';
+import NewAgent from './pages/NewAgent';
 import __Layout from './Layout.jsx';
 
 
@@ -99,6 +100,7 @@ export const PAGES = {
     "TeamManagement": TeamManagement,
     "TaskAssignment": TaskAssignment,
     "TaskMonitoring": TaskMonitoring,
+    "NewAgent": NewAgent,
 }
 
 export const pagesConfig = {
