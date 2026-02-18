@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -11,13 +11,20 @@ import {
   Store,
   MapPin,
   Menu,
-  X,
   LogOut,
-  ChevronRight,
   Plus,
   BarChart3,
-  Users
+  Users,
+  ClipboardCheck
 } from 'lucide-react';
+
+const mobileNavItems = [
+  { name: 'Home', icon: LayoutDashboard, page: 'SuperDashboard' },
+  { name: 'Shops', icon: Store, page: 'Shops' },
+  { name: 'Check In', icon: ClipboardCheck, page: 'MobileCheckIn', highlight: true },
+  { name: 'Map', icon: MapPin, page: 'MapView' },
+  { name: 'HR', icon: Users, page: 'HRDashboard' },
+];
 
 const navItems = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'SuperDashboard' },
@@ -160,9 +167,35 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:ml-80 pt-24 p-6 min-h-screen">
-        {children}
-      </main>
-    </div>
-  );
-}
+          <main className="lg:ml-80 pt-24 p-4 md:p-6 pb-24 lg:pb-6 min-h-screen">
+            {children}
+          </main>
+
+          {/* Mobile Bottom Navigation */}
+          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#e8ecf1] border-t border-slate-200 shadow-[0_-4px_16px_#c5c9ce]">
+            <div className="flex items-center justify-around py-1 px-2 safe-area-pb">
+              {mobileNavItems.map((item) => {
+                const isActive = currentPageName === item.page;
+                const Icon = item.icon;
+                return (
+                  <Link key={item.page} to={createPageUrl(item.page)} className="flex-1">
+                    <div className={`flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl transition-all
+                      ${item.highlight
+                        ? isActive
+                          ? 'bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white shadow-[4px_4px_8px_#c5c9ce,-2px_-2px_6px_#ffffff]'
+                          : 'bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white opacity-80'
+                        : isActive
+                          ? 'text-[#0ea5e9]'
+                          : 'text-slate-500'
+                      }`}>
+                      <Icon className={`${item.highlight ? 'w-5 h-5' : 'w-5 h-5'}`} />
+                      <span className="text-[10px] font-medium leading-tight">{item.name}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+        </div>
+      );
+      }
