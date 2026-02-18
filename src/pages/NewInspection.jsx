@@ -34,7 +34,10 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { GuidedChecklistItem, SectionHeader, StepNavigation } from '../components/mobile/GuidedChecklist';
 import { PhotoCapture } from '../components/mobile/PhotoCapture';
-import { SyncStatusIndicator } from '../components/mobile/OfflineSyncManager';
+import { offlineStorage } from '../components/offline/OfflineStorage';
+import { useOfflineStatus } from '../components/offline/useOfflineStatus';
+import { refreshPendingCount } from '../components/offline/useOfflineStatus';
+import OfflineStatusBar from '../components/offline/OfflineStatusBar';
 
 // Checklist items configuration with guidance
 const checklistConfig = {
