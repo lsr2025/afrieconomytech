@@ -194,20 +194,9 @@ export default function NewInspection() {
   
   const [currentSection, setCurrentSection] = useState(0);
   const [gpsLoading, setGpsLoading] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [validationErrors, setValidationErrors] = useState([]);
-
-  // Track online status
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  const [savedOffline, setSavedOffline] = useState(false);
+  const { isOnline } = useOfflineStatus();
 
   const { data: shop } = useQuery({
     queryKey: ['shop', shopId],
