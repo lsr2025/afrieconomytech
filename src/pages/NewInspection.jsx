@@ -201,8 +201,12 @@ export default function NewInspection() {
   const { data: shop } = useQuery({
     queryKey: ['shop', shopId],
     queryFn: async () => {
-      const shops = await base44.entities.Shop.filter({ id: shopId });
-      return shops[0];
+      try {
+        const shops = await base44.entities.Shop.filter({ id: shopId });
+        return shops[0];
+      } catch {
+        return offlineStorage.getCachedShop(shopId);
+      }
     },
     enabled: !!shopId
   });
