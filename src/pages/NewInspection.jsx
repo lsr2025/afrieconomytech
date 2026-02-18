@@ -26,8 +26,6 @@ import {
   Loader2,
   AlertTriangle,
   Package,
-  Wifi,
-  WifiOff,
   Info,
   Lightbulb
 } from 'lucide-react';
