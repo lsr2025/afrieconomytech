@@ -9,7 +9,7 @@
  */
 // Offline Storage Utility using IndexedDB
 const DB_NAME = 'SpazaOfflineDB';
-const DB_VERSION = 3; // bumped to add shop cache
+const DB_VERSION = 4; // bumped to add pending shop edits
 
 export const STORES = {
   SHOPS: 'pending_shops',
@@ -17,6 +17,7 @@ export const STORES = {
   PHOTOS: 'pending_photos',
   SHOP_CACHE: 'shop_cache',       // read cache for offline ShopDetail/Shops
   ATTENDANCE: 'pending_attendance',
+  SHOP_EDITS: 'pending_shop_edits', // offline edits to existing shops
 };
 
 class OfflineStorage {
