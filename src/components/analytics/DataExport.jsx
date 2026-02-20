@@ -85,202 +85,150 @@ export default function DataExport({ shops, inspections }) {
 
   const municipalities = [...new Set(shops.map(s => s.municipality).filter(Boolean))];
 
-  const filteredData = () => {
-    let data = shops.filter(shop => {
-      const matchesStatus = statusFilter === 'all' || shop.compliance_status === statusFilter;
-      const matchesMunicipality = municipalityFilter === 'all' || shop.municipality === municipalityFilter;
-      return matchesStatus && matchesMunicipality;
-    });
+  // ── helpers ──
+  const escapeXml = (s) => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const csvRow = (arr) => arr.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
 
-    return data;
+  const filteredShops = () => shops.filter(s => {
+    const ok1 = statusFilter === 'all' || s.compliance_status === statusFilter;
+    const ok2 = municipalityFilter === 'all' || s.municipality === municipalityFilter;
+    return ok1 && ok2;
+  });
+
+  const filteredInspections = () => {
+    const shopIds = new Set(filteredShops().map(s => s.id));
+    return inspections.filter(i => municipalityFilter === 'all' || shopIds.has(i.shop_id));
   };
 
-  const generateCSV = (data) => {
-    const headers = [
-      'Shop Name',
-      'Owner Name',
-      'Municipality',
-      'Ward',
-      'Compliance Status',
-      'Compliance Score',
-      'Funding Status',
-      'Risk Level',
-      'Trading Months',
-      'Has CoA',
-      'Has Bank Account',
-      'SARS Registered',
-      'Structure Type',
-      'Created Date'
+  // ── SHOPS headers / rows ──
+  const shopHeaders = () => {
+    const h = ['Shop Name','Owner Name','Municipality','Ward','Compliance Status','Compliance Score',
+      'Funding Status','Risk Level','Years Operating','Has CoA','Has Bank Account','SARS Registered',
+      'CIPC Registered','Structure Type','GPS Latitude','GPS Longitude','Created Date'];
+    if (includePII) h.push('Phone Number','Owner ID Number','Owner Email');
+    return h;
+  };
+
+  const shopRow = (s) => {
+    const r = [
+      s.shop_name||'', s.owner_name||'', s.municipality||'', s.ward||'',
+      s.compliance_status||'pending', s.compliance_score||'', s.funding_status||'',
+      s.risk_level||'', s.years_operating||'',
+      s.has_coa?'Yes':'No', s.has_business_bank_account?'Yes':'No',
+      s.is_sars_registered?'Yes':'No', s.is_cipc_registered?'Yes':'No',
+      s.structure_type||'', s.gps_latitude||'', s.gps_longitude||'',
+      s.created_date ? format(new Date(s.created_date),'yyyy-MM-dd') : ''
     ];
-
-    if (includePII) {
-      headers.push('Phone Number', 'ID Number');
-    }
-
-    const rows = data.map(shop => {
-      const row = [
-        shop.shop_name || '',
-        shop.owner_name || '',
-        shop.municipality || '',
-        shop.ward || '',
-        shop.compliance_status || 'pending',
-        shop.compliance_score || '',
-        shop.funding_status || '',
-        shop.risk_level || '',
-        shop.trading_months || '',
-        shop.has_coa ? 'Yes' : 'No',
-        shop.has_business_bank_account ? 'Yes' : 'No',
-        shop.is_sars_registered ? 'Yes' : 'No',
-        shop.structure_type || '',
-        shop.created_date ? format(new Date(shop.created_date), 'yyyy-MM-dd') : ''
-      ];
-
-      if (includePII) {
-        row.push(shop.phone_number || '', shop.owner_id_number || '');
-      }
-
-      return row;
-    });
-
-    const csvContent = [headers, ...rows]
-      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-
-    return csvContent;
+    if (includePII) r.push(s.phone_number||'', s.owner_id_number||'', s.owner_email||'');
+    return r;
   };
 
-  const generateXML = (data) => {
-    const xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    const rootStart = '<SpazaComplianceReport>\n';
-    const rootEnd = '</SpazaComplianceReport>';
-    
-    const metadata = `  <Metadata>
-    <GeneratedDate>${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</GeneratedDate>
-    <TotalRecords>${data.length}</TotalRecords>
-    <ReportType>Compliance Export</ReportType>
-    <GeneratedBy>YamiMine Spaza Compliance System</GeneratedBy>
-  </Metadata>\n`;
+  // ── INSPECTIONS headers / rows ──
+  const inspectionHeaders = () => [
+    'Inspection ID','Shop ID','Inspection Type','Inspector Name','Inspector Email',
+    'Check-In Time','Check-Out Time','Total Score','Status',
+    'Structural Walls/Floors','Ventilation','Pest Control',
+    'Handwashing','Soap & Towels','Protective Clothing',
+    'Fridge Temp (°C)','Food Separation','Expired Items Count',
+    'Waste Disposal','Water Supply','Chemical Storage',
+    'EHP Verified','Risk Flags','Created Date'
+  ];
 
-    const shopsXml = data.map(shop => `  <Shop>
-    <ShopName>${escapeXml(shop.shop_name || '')}</ShopName>
-    <OwnerName>${escapeXml(shop.owner_name || '')}</OwnerName>
-    <Municipality>${escapeXml(shop.municipality || '')}</Municipality>
-    <Ward>${escapeXml(shop.ward || '')}</Ward>
-    <ComplianceStatus>${shop.compliance_status || 'pending'}</ComplianceStatus>
-    <ComplianceScore>${shop.compliance_score || 0}</ComplianceScore>
-    <FundingStatus>${shop.funding_status || ''}</FundingStatus>
-    <RiskLevel>${shop.risk_level || ''}</RiskLevel>
-    <TradingMonths>${shop.trading_months || 0}</TradingMonths>
-    <HasCertificateOfAcceptability>${shop.has_coa ? 'true' : 'false'}</HasCertificateOfAcceptability>
-    <HasBusinessBankAccount>${shop.has_business_bank_account ? 'true' : 'false'}</HasBusinessBankAccount>
-    <IsSARSRegistered>${shop.is_sars_registered ? 'true' : 'false'}</IsSARSRegistered>
-    <StructureType>${escapeXml(shop.structure_type || '')}</StructureType>
-    <GPSCoordinates>
-      <Latitude>${shop.gps_latitude || ''}</Latitude>
-      <Longitude>${shop.gps_longitude || ''}</Longitude>
-    </GPSCoordinates>
-    <CreatedDate>${shop.created_date ? format(new Date(shop.created_date), 'yyyy-MM-dd') : ''}</CreatedDate>
-  </Shop>`).join('\n');
+  const inspectionRow = (i) => [
+    i.id||'', i.shop_id||'', i.inspection_type||'', i.inspector_name||'', i.inspector_email||'',
+    i.check_in_time ? format(new Date(i.check_in_time),'yyyy-MM-dd HH:mm') : '',
+    i.check_out_time ? format(new Date(i.check_out_time),'yyyy-MM-dd HH:mm') : '',
+    i.total_score||'', i.status||'',
+    i.structural_walls_floors||'', i.structural_ventilation||'', i.structural_pest_control||'',
+    i.hygiene_handwashing||'', i.hygiene_soap_towels||'', i.hygiene_protective_clothing||'',
+    i.coldchain_fridge_temp||'', i.coldchain_separation||'', i.inventory_expired_count||0,
+    i.waste_disposal||'', i.water_supply||'', i.chemical_storage||'',
+    i.ehp_verified?'Yes':'No',
+    Array.isArray(i.risk_flags) ? i.risk_flags.join('; ') : (i.risk_flags||''),
+    i.created_date ? format(new Date(i.created_date),'yyyy-MM-dd') : ''
+  ];
 
-    return xmlHeader + rootStart + metadata + '  <Shops>\n' + shopsXml + '\n  </Shops>\n' + rootEnd;
-  };
-
-  const escapeXml = (str) => {
-    return str.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&apos;');
-  };
-
-  const generateNEFReport = (data) => {
-    // NEF-specific format focusing on funding eligibility
-    const eligibleShops = data.filter(s => s.funding_status === 'eligible');
-    
-    const headers = [
-      'Business Name',
-      'Owner Name',
-      'Municipality',
-      'Ward',
-      'Compliance Score',
-      'Trading Duration (Months)',
-      'Has CoA',
-      'Bank Account',
-      'SARS Registered',
-      'CIPC Number',
-      'Funding Recommendation'
-    ];
-
-    const rows = eligibleShops.map(shop => [
-      shop.shop_name || '',
-      shop.owner_name || '',
-      shop.municipality || '',
-      shop.ward || '',
-      shop.compliance_score || '',
-      shop.trading_months || '',
-      shop.has_coa ? 'Yes' : 'No',
-      shop.has_business_bank_account ? 'Yes' : 'No',
-      shop.is_sars_registered ? 'Yes' : 'No',
-      shop.cipc_number || 'N/A',
-      'Eligible for NEF Support'
-    ]);
-
-    const csvContent = [headers, ...rows]
-      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-
-    return csvContent;
-  };
+  // ── NEF report ──
+  const nefHeaders = ['Business Name','Owner Name','Municipality','Ward','Compliance Score',
+    'Years Operating','Has CoA','Bank Account','SARS Registered','CIPC Number','Funding Recommendation'];
+  const nefRow = (s) => [
+    s.shop_name||'', s.owner_name||'', s.municipality||'', s.ward||'',
+    s.compliance_score||'', s.years_operating||'',
+    s.has_coa?'Yes':'No', s.has_business_bank_account?'Yes':'No',
+    s.is_sars_registered?'Yes':'No', s.cipc_number||'N/A','Eligible for NEF Support'
+  ];
 
   const handleExport = () => {
     setExporting(true);
-    const data = filteredData();
-    
+    const shops_ = filteredShops();
+    const insp_ = filteredInspections();
+    const stamp = format(new Date(), 'yyyyMMdd');
+
     setTimeout(() => {
-      let content, filename, mimeType;
-
-      switch(exportFormat) {
-        case 'csv':
-          content = generateCSV(data);
-          filename = `spaza_compliance_${format(new Date(), 'yyyyMMdd')}.csv`;
-          mimeType = 'text/csv';
-          break;
-        case 'xml':
-          content = generateXML(data);
-          filename = `spaza_compliance_${format(new Date(), 'yyyyMMdd')}.xml`;
-          mimeType = 'application/xml';
-          break;
-        case 'nef':
-          content = generateNEFReport(data);
-          filename = `nef_funding_report_${format(new Date(), 'yyyyMMdd')}.csv`;
-          mimeType = 'text/csv';
-          break;
-        case 'dsbd':
-          content = generateCSV(data);
-          filename = `dsbd_compliance_report_${format(new Date(), 'yyyyMMdd')}.csv`;
-          mimeType = 'text/csv';
-          break;
-        default:
-          content = generateCSV(data);
-          filename = `export_${format(new Date(), 'yyyyMMdd')}.csv`;
-          mimeType = 'text/csv';
+      if (exportType === 'inspections') {
+        const headers = inspectionHeaders();
+        const rows = insp_.map(inspectionRow);
+        if (exportFormat === 'xlsx') {
+          triggerDownload(buildXLSX(headers, rows, 'Inspections'), `inspections_${stamp}.xls`, 'application/vnd.ms-excel');
+        } else {
+          triggerDownload([csvRow(headers), ...rows.map(csvRow)].join('\n'), `inspections_${stamp}.csv`, 'text/csv');
+        }
+      } else if (exportType === 'nef') {
+        const eligible = shops_.filter(s => s.funding_status === 'eligible');
+        const rows = eligible.map(nefRow);
+        if (exportFormat === 'xlsx') {
+          triggerDownload(buildXLSX(nefHeaders, rows, 'NEF Report'), `nef_report_${stamp}.xls`, 'application/vnd.ms-excel');
+        } else {
+          triggerDownload([csvRow(nefHeaders), ...rows.map(csvRow)].join('\n'), `nef_report_${stamp}.csv`, 'text/csv');
+        }
+      } else {
+        // shops
+        const headers = shopHeaders();
+        const rows = shops_.map(shopRow);
+        if (exportFormat === 'xlsx') {
+          triggerDownload(buildXLSX(headers, rows, 'Shops'), `shops_${stamp}.xls`, 'application/vnd.ms-excel');
+        } else if (exportFormat === 'xml') {
+          const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<SpazaComplianceReport>
+  <Metadata>
+    <GeneratedDate>${format(new Date(),'yyyy-MM-dd HH:mm:ss')}</GeneratedDate>
+    <TotalRecords>${shops_.length}</TotalRecords>
+    <GeneratedBy>YamiMine Solutions</GeneratedBy>
+  </Metadata>
+  <Shops>
+${shops_.map(s=>`    <Shop>
+      <ShopName>${escapeXml(s.shop_name)}</ShopName>
+      <OwnerName>${escapeXml(s.owner_name)}</OwnerName>
+      <Municipality>${escapeXml(s.municipality)}</Municipality>
+      <Ward>${escapeXml(s.ward)}</Ward>
+      <ComplianceStatus>${s.compliance_status||''}</ComplianceStatus>
+      <ComplianceScore>${s.compliance_score||0}</ComplianceScore>
+      <FundingStatus>${s.funding_status||''}</FundingStatus>
+      <RiskLevel>${s.risk_level||''}</RiskLevel>
+    </Shop>`).join('\n')}
+  </Shops>
+</SpazaComplianceReport>`;
+          triggerDownload(xml, `shops_${stamp}.xml`, 'application/xml');
+        } else {
+          triggerDownload([csvRow(headers), ...rows.map(csvRow)].join('\n'), `shops_${stamp}.csv`, 'text/csv');
+        }
       }
-
-      const blob = new Blob([content], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
       setExporting(false);
-    }, 1000);
+    }, 800);
   };
 
-  const filteredCount = filteredData().length;
+  const triggerDownload = (content, filename, mimeType) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  };
+
+  const currentCount = exportType === 'inspections' ? filteredInspections().length
+    : exportType === 'nef' ? filteredShops().filter(s => s.funding_status === 'eligible').length
+    : filteredShops().length;
 
   return (
     <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50">
