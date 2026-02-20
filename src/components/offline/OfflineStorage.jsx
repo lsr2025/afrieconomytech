@@ -59,6 +59,11 @@ class OfflineStorage {
           const s = db.createObjectStore(STORES.ATTENDANCE, { keyPath: 'id', autoIncrement: true });
           s.createIndex('timestamp', 'timestamp', { unique: false });
         }
+        if (!db.objectStoreNames.contains(STORES.SHOP_EDITS)) {
+          // keyed by shop_id so we always keep only the latest edit per shop
+          const s = db.createObjectStore(STORES.SHOP_EDITS, { keyPath: 'shop_id' });
+          s.createIndex('timestamp', 'timestamp', { unique: false });
+        }
       };
     });
   }
