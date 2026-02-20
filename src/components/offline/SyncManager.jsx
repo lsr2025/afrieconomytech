@@ -44,6 +44,17 @@ export default function SyncManager() {
         } catch { failed++; }
       }
 
+      // Sync pending shop edits (offline edits to existing shops)
+      const pendingShopEdits = await offlineStorage.getPendingShopEdits();
+      for (const edit of pendingShopEdits) {
+        try {
+          await base44.entities.Shop.update(edit.shop_id, edit.data);
+          await offlineStorage.updateCachedShop({ id: edit.shop_id, ...edit.data });
+          await offlineStorage.deletePendingShopEdit(edit.shop_id);
+          success++;
+        } catch { failed++; }
+      }
+
       // Sync pending inspections
       const pendingInspections = await offlineStorage.getPendingInspections();
       for (const insp of pendingInspections) {
