@@ -230,8 +230,6 @@ ${shops_.map(s=>`    <Shop>
     : exportType === 'nef' ? filteredShops().filter(s => s.funding_status === 'eligible').length
     : filteredShops().length;
 
-  const municipalities = [...new Set(shops.map(s => s.municipality).filter(Boolean))];
-
   return (
     <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50">
       <CardHeader className="border-b border-slate-700/50">
