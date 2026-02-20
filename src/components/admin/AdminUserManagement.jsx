@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Users, Search, Plus, Shield, UserCheck, UserX, Mail, Edit2, Check, X } from 'lucide-react';
+import { Users, Search, Plus, Shield, UserCheck, Mail, Edit2, Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -32,24 +32,12 @@ export default function AdminUserManagement({ currentUser }) {
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
-    setInviting(true);
-    setInviteError('');
-    setInviteSuccess('');
+    setInviting(true); setInviteError(''); setInviteSuccess('');
     try {
       await base44.users.inviteUser(inviteEmail, inviteRole);
       setInviteSuccess(`Invitation sent to ${inviteEmail}`);
       setInviteEmail('');
-
-      // log
-      await base44.entities.AuditLog.create({
-        user_email: currentUser.email,
-        user_name: currentUser.full_name,
-        action: 'create',
-        entity_type: 'User',
-        entity_name: inviteEmail,
-        description: `Invited ${inviteEmail} as ${inviteRole}`,
-        severity: 'info',
-      });
+      await base44.entities.AuditLog.create({ user_email: currentUser.email, user_name: currentUser.full_name, action: 'create', entity_type: 'User', entity_name: inviteEmail, description: `Invited ${inviteEmail} as ${inviteRole}`, severity: 'info' });
     } catch (e) {
       setInviteError(e.message || 'Failed to send invitation');
     }
@@ -63,31 +51,17 @@ export default function AdminUserManagement({ currentUser }) {
 
   return (
     <div className="space-y-6">
-      {/* Invite New User */}
       <div className="bg-[#e8ecf1] rounded-3xl shadow-[8px_8px_16px_#c5c9ce,-8px_-8px_16px_#ffffff] p-6">
         <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
           <Plus className="w-5 h-5 text-[#0ea5e9]" /> Invite New User
         </h2>
         <div className="flex flex-col sm:flex-row gap-3">
-          <Input
-            placeholder="Email address"
-            value={inviteEmail}
-            onChange={e => setInviteEmail(e.target.value)}
-            className="flex-1 bg-[#e8ecf1] border-0 shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff] rounded-xl"
-          />
-          <select
-            value={inviteRole}
-            onChange={e => setInviteRole(e.target.value)}
-            className="px-4 py-2 rounded-xl bg-[#e8ecf1] shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff] text-slate-700 border-0 outline-none"
-          >
+          <Input placeholder="Email address" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} className="flex-1 bg-[#e8ecf1] border-0 shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff] rounded-xl" />
+          <select value={inviteRole} onChange={e => setInviteRole(e.target.value)} className="px-4 py-2 rounded-xl bg-[#e8ecf1] shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff] text-slate-700 border-0 outline-none">
             <option value="user">User (Agent)</option>
             <option value="admin">Admin</option>
           </select>
-          <Button
-            onClick={handleInvite}
-            disabled={inviting || !inviteEmail}
-            className="bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white rounded-xl border-0 shadow-[4px_4px_8px_#c5c9ce]"
-          >
+          <Button onClick={handleInvite} disabled={inviting || !inviteEmail} className="bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white rounded-xl border-0 shadow-[4px_4px_8px_#c5c9ce]">
             {inviting ? 'Sending…' : 'Send Invite'}
           </Button>
         </div>
@@ -95,7 +69,6 @@ export default function AdminUserManagement({ currentUser }) {
         {inviteError && <p className="mt-2 text-sm text-red-500 flex items-center gap-1"><X className="w-4 h-4" />{inviteError}</p>}
       </div>
 
-      {/* User List */}
       <div className="bg-[#e8ecf1] rounded-3xl shadow-[8px_8px_16px_#c5c9ce,-8px_-8px_16px_#ffffff] p-6">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -103,15 +76,9 @@ export default function AdminUserManagement({ currentUser }) {
           </h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input
-              placeholder="Search users…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-9 bg-[#e8ecf1] border-0 shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff] rounded-xl w-56"
-            />
+            <Input placeholder="Search users…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 bg-[#e8ecf1] border-0 shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff] rounded-xl w-56" />
           </div>
         </div>
-
         {isLoading ? (
           <p className="text-slate-400 text-center py-8">Loading users…</p>
         ) : (
@@ -131,23 +98,14 @@ export default function AdminUserManagement({ currentUser }) {
                     {u.role || 'user'}
                   </Badge>
                   {u.id !== currentUser?.id && (
-                    <button
-                      onClick={() => {
-                        const newRole = u.role === 'admin' ? 'user' : 'admin';
-                        updateRoleMutation.mutate({ id: u.id, role: newRole });
-                      }}
-                      title="Toggle role"
-                      className="p-2 rounded-xl text-slate-500 hover:text-[#0ea5e9] hover:shadow-[3px_3px_6px_#c5c9ce,-3px_-3px_6px_#ffffff] transition-all"
-                    >
+                    <button onClick={() => updateRoleMutation.mutate({ id: u.id, role: u.role === 'admin' ? 'user' : 'admin' })} title="Toggle role" className="p-2 rounded-xl text-slate-500 hover:text-[#0ea5e9] hover:shadow-[3px_3px_6px_#c5c9ce,-3px_-3px_6px_#ffffff] transition-all">
                       <Edit2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               </div>
             ))}
-            {filteredUsers.length === 0 && (
-              <p className="text-slate-400 text-center py-6">No users found</p>
-            )}
+            {filteredUsers.length === 0 && <p className="text-slate-400 text-center py-6">No users found</p>}
           </div>
         )}
       </div>
