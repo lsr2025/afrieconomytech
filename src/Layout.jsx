@@ -15,7 +15,8 @@ import {
   Plus,
   BarChart3,
   Users,
-  ClipboardCheck
+  ClipboardCheck,
+  Shield
 } from 'lucide-react';
 
 const mobileNavItems = [
