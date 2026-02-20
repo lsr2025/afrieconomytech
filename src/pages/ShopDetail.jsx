@@ -477,10 +477,14 @@ export default function ShopDetail() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
-                <InfoRow icon={User} label="Full Name" value={shop.owner_name} />
+                <InfoRow icon={User} label="Full Name" value={isEditing ? (
+                  <Input value={editData.owner_name} onChange={e => setEditData(d => ({ ...d, owner_name: e.target.value }))} className="bg-slate-800 border-slate-600 text-white h-7 text-sm" />
+                ) : shop.owner_name} />
                 <InfoRow icon={FileText} label="ID Number" value={shop.owner_id_number ? '••••••' + shop.owner_id_number.slice(-4) : null} />
                 <InfoRow icon={MapPin} label="Nationality" value={shop.owner_nationality?.replace('_', ' ')} />
-                <InfoRow icon={Phone} label="Phone" value={shop.phone_number} highlight />
+                <InfoRow icon={Phone} label="Phone" value={isEditing ? (
+                  <Input value={editData.phone_number} onChange={e => setEditData(d => ({ ...d, phone_number: e.target.value }))} className="bg-slate-800 border-slate-600 text-white h-7 text-sm" />
+                ) : shop.phone_number} highlight />
                 <InfoRow icon={User} label="Gender" value={shop.owner_gender} />
                 <InfoRow icon={User} label="Age Group" value={shop.owner_age_group} />
                 <InfoRow icon={User} label="PDG Status" value={shop.owner_pdg_status?.replace('_', ' ')} />
