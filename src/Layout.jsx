@@ -31,7 +31,8 @@ const navItems = [
   { name: 'Shops', icon: Store, page: 'Shops' },
   { name: 'Map View', icon: MapPin, page: 'MapView' },
   { name: 'Analytics', icon: BarChart3, page: 'Analytics' },
-  { name: 'HR', icon: Users, page: 'HRDashboard' }
+  { name: 'HR', icon: Users, page: 'HRDashboard' },
+  { name: 'Admin Panel', icon: Shield, page: 'AdminPanel', adminOnly: true }
 ];
 
 export default function Layout({ children, currentPageName }) {
