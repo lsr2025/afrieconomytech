@@ -62,8 +62,15 @@ class OfflineStorage {
           s.createIndex('timestamp', 'timestamp', { unique: false });
         }
         if (!db.objectStoreNames.contains(STORES.SHOP_EDITS)) {
-          // keyed by shop_id so we always keep only the latest edit per shop
           const s = db.createObjectStore(STORES.SHOP_EDITS, { keyPath: 'shop_id' });
+          s.createIndex('timestamp', 'timestamp', { unique: false });
+        }
+        if (!db.objectStoreNames.contains(STORES.AGENT_CACHE)) {
+          db.createObjectStore(STORES.AGENT_CACHE, { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains(STORES.CHECKOUT_QUEUE)) {
+          // keyed by attendance_id so only one checkout per record
+          const s = db.createObjectStore(STORES.CHECKOUT_QUEUE, { keyPath: 'attendance_id' });
           s.createIndex('timestamp', 'timestamp', { unique: false });
         }
       };
