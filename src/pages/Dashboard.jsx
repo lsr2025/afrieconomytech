@@ -30,27 +30,27 @@ import {
 'lucide-react';
 import { motion } from 'framer-motion';
 
-const StatCard = ({ title, value, subtitle, icon: Icon, trend }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3 }}
-  >
+const StatCard = ({ title, value, subtitle, icon: Icon, trend }) =>
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3 }}>
+
     <Card className="relative overflow-hidden bg-[#e8ecf1] border-0 rounded-3xl shadow-[12px_12px_24px_#c5c9ce,-12px_-12px_24px_#ffffff]">
       <CardContent className="p-4 md:p-6">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs md:text-sm font-medium text-slate-500 uppercase tracking-wider leading-tight">{title}</p>
             <p className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] bg-clip-text text-transparent mt-1 md:mt-2">{value}</p>
-            {subtitle && (
-              <p className="text-xs text-slate-600 mt-0.5 md:mt-1 hidden sm:block">{subtitle}</p>
-            )}
-            {trend && (
-              <div className="hidden sm:flex items-center gap-1 mt-2">
+            {subtitle &&
+          <p className="text-xs text-slate-600 mt-0.5 md:mt-1 hidden sm:block">{subtitle}</p>
+          }
+            {trend &&
+          <div className="hidden sm:flex items-center gap-1 mt-2">
                 <TrendingUp className="w-3 h-3 text-[#0ea5e9]" />
                 <span className="text-[#0ea5e9] text-xs font-medium">{trend}</span>
               </div>
-            )}
+          }
           </div>
           <div className="p-2 md:p-4 rounded-xl md:rounded-2xl bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] shadow-[8px_8px_16px_#c5c9ce,-4px_-4px_12px_#ffffff] flex-shrink-0">
             <Icon className="w-5 h-5 md:w-8 md:h-8 text-white" />
@@ -58,8 +58,8 @@ const StatCard = ({ title, value, subtitle, icon: Icon, trend }) => (
         </div>
       </CardContent>
     </Card>
-  </motion.div>
-);
+  </motion.div>;
+
 
 
 const RecentActivity = ({ shops, inspections }) => {
@@ -82,10 +82,10 @@ const RecentActivity = ({ shops, inspections }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'compliant': return 'bg-emerald-100 text-emerald-700 border-0';
-      case 'non_compliant': return 'bg-red-100 text-red-700 border-0';
-      case 'partially_compliant': return 'bg-amber-100 text-amber-700 border-0';
-      default: return 'bg-slate-200 text-slate-600 border-0';
+      case 'compliant':return 'bg-emerald-100 text-emerald-700 border-0';
+      case 'non_compliant':return 'bg-red-100 text-red-700 border-0';
+      case 'partially_compliant':return 'bg-amber-100 text-amber-700 border-0';
+      default:return 'bg-slate-200 text-slate-600 border-0';
     }
   };
 
@@ -98,28 +98,28 @@ const RecentActivity = ({ shops, inspections }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        {activities.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">
+        {activities.length === 0 ?
+        <div className="p-8 text-center text-slate-500">
             No recent activity yet
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-200">
-            {activities.map((activity, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4"
-              >
+          </div> :
+
+        <div className="divide-y divide-slate-200">
+            {activities.map((activity, i) =>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="p-4">
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${activity.type === 'shop' ? 'bg-[#0ea5e9]' : 'bg-[#3b82f6]'}`} />
                     <div>
                       <p className="text-slate-700 text-sm font-medium">{activity.title}</p>
-                      {activity.ward && (
-                        <p className="text-slate-500 text-xs">Ward {activity.ward}</p>
-                      )}
+                      {activity.ward &&
+                  <p className="text-slate-500 text-xs">Ward {activity.ward}</p>
+                  }
                     </div>
                   </div>
                   <Badge className={getStatusColor(activity.status)}>
@@ -127,17 +127,17 @@ const RecentActivity = ({ shops, inspections }) => {
                   </Badge>
                 </div>
               </motion.div>
-            ))}
+          )}
           </div>
-        )}
+        }
       </CardContent>
-    </Card>
-  );
+    </Card>);
+
 
 };
 
-const QuickActions = () => (
-  <Card className="bg-[#e8ecf1] border-0 rounded-3xl shadow-[12px_12px_24px_#c5c9ce,-12px_-12px_24px_#ffffff]">
+const QuickActions = () =>
+<Card className="bg-[#e8ecf1] border-0 rounded-3xl shadow-[12px_12px_24px_#c5c9ce,-12px_-12px_24px_#ffffff]">
     <CardHeader className="border-b border-slate-200">
       <CardTitle className="text-slate-700">Quick Actions</CardTitle>
     </CardHeader>
@@ -179,8 +179,8 @@ const QuickActions = () => (
         </Button>
       </Link>
     </CardContent>
-  </Card>
-);
+  </Card>;
+
 
 
 const ComplianceBreakdown = ({ shops }) => {
@@ -207,28 +207,28 @@ const ComplianceBreakdown = ({ shops }) => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="h-4 flex rounded-full overflow-hidden mb-6 shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff]">
-          {segments.map((seg, i) => (
-            <div
-              key={i}
-              className={`${seg.color} transition-all duration-500`}
-              style={{ width: `${seg.percent}%` }}
-            />
-          ))}
+          {segments.map((seg, i) =>
+          <div
+            key={i}
+            className={`${seg.color} transition-all duration-500`}
+            style={{ width: `${seg.percent}%` }} />
+
+          )}
         </div>
         <div className="grid grid-cols-2 gap-4">
-          {segments.map((seg, i) => (
-            <div key={i} className="flex items-center gap-3">
+          {segments.map((seg, i) =>
+          <div key={i} className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${seg.color}`} />
               <div>
                 <p className="text-slate-700 font-semibold">{seg.count}</p>
                 <p className="text-slate-500 text-sm">{seg.label}</p>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>);
+
 
 };
 
@@ -255,15 +255,15 @@ export default function Dashboard() {
       <div className="mb-5 md:mb-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-        >
+          animate={{ opacity: 1, y: 0 }} className="mx-4 px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+
           <div>
             <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] bg-clip-text text-transparent">
               Command Centre
             </h1>
-            <p className="text-slate-600 mt-0.5 text-sm md:text-base">
-              Spaza Compliance & Funding Readiness
+            <p className="text-slate-600 mt-0.5 text-lg uppercase md:text-base">Spaza Compliance & Funding Readiness
+
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -282,21 +282,21 @@ export default function Dashboard() {
           value={totalShops}
           subtitle="Registered in system"
           icon={Store}
-          trend={totalShops > 0 ? "+12% this week" : null}
-        />
+          trend={totalShops > 0 ? "+12% this week" : null} />
+
 
         <StatCard
           title="Funding Ready"
           value={fundingReady}
           subtitle="Eligible for NEF support"
-          icon={DollarSign}
-        />
+          icon={DollarSign} />
+
         <StatCard
           title="Critical Risk"
           value={criticalRisk}
           subtitle="Require immediate action"
-          icon={AlertTriangle}
-        />
+          icon={AlertTriangle} />
+
 
       </div>
 
@@ -349,10 +349,10 @@ export default function Dashboard() {
 
       {/* Footer Branding */}
       <div className="mt-12 text-center">
-        <p className="text-slate-500 text-sm">
-          Created by <a href="https://www.kwahlelwagroup.co.za" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] bg-clip-text text-transparent font-semibold hover:underline">Kwahlelwa Group</a>
+        <p className="text-slate-500 text-sm font-semibold uppercase">Created by Kwahlelwa Group
+
         </p>
       </div>
-    </div>
-  );
+    </div>);
+
 }
