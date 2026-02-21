@@ -139,8 +139,6 @@ export default function Layout({ children, currentPageName }) {
 
 
 
-
-
       </header>
 
       {/* Mobile Sidebar Overlay */}
