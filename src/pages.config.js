@@ -54,7 +54,6 @@ import Analytics from './pages/Analytics';
 import AttendanceTracking from './pages/AttendanceTracking';
 import BulkImportAgents from './pages/BulkImportAgents';
 import Dashboard from './pages/Dashboard';
-import Guardrails from './pages/Guardrails';
 import HRDashboard from './pages/HRDashboard';
 import Home from './pages/Home';
 import LeaveManagement from './pages/LeaveManagement';
@@ -76,6 +75,7 @@ import SuperDashboard from './pages/SuperDashboard';
 import TaskAssignment from './pages/TaskAssignment';
 import TaskMonitoring from './pages/TaskMonitoring';
 import TeamManagement from './pages/TeamManagement';
+import Guardrails from './pages/Guardrails';
 import __Layout from './Layout.jsx';
 
 
@@ -87,7 +87,6 @@ export const PAGES = {
     "AttendanceTracking": AttendanceTracking,
     "BulkImportAgents": BulkImportAgents,
     "Dashboard": Dashboard,
-    "Guardrails": Guardrails,
     "HRDashboard": HRDashboard,
     "Home": Home,
     "LeaveManagement": LeaveManagement,
@@ -109,6 +108,7 @@ export const PAGES = {
     "TaskAssignment": TaskAssignment,
     "TaskMonitoring": TaskMonitoring,
     "TeamManagement": TeamManagement,
+    "Guardrails": Guardrails,
 }
 
 export const pagesConfig = {

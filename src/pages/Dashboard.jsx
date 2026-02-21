@@ -37,23 +37,23 @@ const StatCard = ({ title, value, subtitle, icon: Icon, trend }) => (
     transition={{ duration: 0.3 }}
   >
     <Card className="relative overflow-hidden bg-[#e8ecf1] border-0 rounded-3xl shadow-[12px_12px_24px_#c5c9ce,-12px_-12px_24px_#ffffff]">
-      <CardContent className="p-4 md:p-6">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-xs md:text-sm font-medium text-slate-500 uppercase tracking-wider leading-tight">{title}</p>
-            <p className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] bg-clip-text text-transparent mt-1 md:mt-2">{value}</p>
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">{title}</p>
+            <p className="text-4xl font-bold bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] bg-clip-text text-transparent mt-2">{value}</p>
             {subtitle && (
-              <p className="text-xs text-slate-600 mt-0.5 md:mt-1 hidden sm:block">{subtitle}</p>
+              <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
             )}
             {trend && (
-              <div className="hidden sm:flex items-center gap-1 mt-2">
-                <TrendingUp className="w-3 h-3 text-[#0ea5e9]" />
-                <span className="text-[#0ea5e9] text-xs font-medium">{trend}</span>
+              <div className="flex items-center gap-1 mt-2">
+                <TrendingUp className="w-4 h-4 text-[#0ea5e9]" />
+                <span className="text-[#0ea5e9] text-sm font-medium">{trend}</span>
               </div>
             )}
           </div>
-          <div className="p-2 md:p-4 rounded-xl md:rounded-2xl bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] shadow-[8px_8px_16px_#c5c9ce,-4px_-4px_12px_#ffffff] flex-shrink-0">
-            <Icon className="w-5 h-5 md:w-8 md:h-8 text-white" />
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] shadow-[8px_8px_16px_#c5c9ce,-4px_-4px_12px_#ffffff]">
+            <Icon className="w-8 h-8 text-white" />
           </div>
         </div>
       </CardContent>
@@ -252,18 +252,18 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="mb-5 md:mb-8">
+      <div className="mb-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
         >
           <div>
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] bg-clip-text text-transparent">
               Command Centre
             </h1>
-            <p className="text-slate-600 mt-0.5 text-sm md:text-base">
-              Spaza Compliance & Funding Readiness
+            <p className="text-slate-600 mt-1">
+              Spaza Compliance & Funding Readiness Dashboard
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -276,7 +276,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           title="Total Shops Profiled"
           value={totalShops}
@@ -301,7 +301,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
           <RecentActivity shops={shops} inspections={inspections} />

@@ -70,23 +70,23 @@ export default function Layout({ children, currentPageName }) {
       
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#e8ecf1] shadow-[8px_8px_16px_#c5c9ce,-8px_-8px_16px_#ffffff]">
-        <div className="px-4 py-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-6">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-slate-700 hover:bg-transparent flex-shrink-0"
+              className="lg:hidden text-slate-700 hover:bg-transparent"
             >
               <Menu className="w-6 h-6" />
             </Button>
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697cbf49c56a50b05e7118cf/c37070ab4_yamiMinelogo.jpg"
               alt="Yami Mine Solutions"
-              className="h-10 object-contain flex-shrink-0"
+              className="h-12 object-contain"
             />
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-3">
             {user && (
               <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-full bg-[#e8ecf1] shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff]">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] flex items-center justify-center shadow-[4px_4px_8px_#c5c9ce,-2px_-2px_6px_#ffffff]">
@@ -98,10 +98,9 @@ export default function Layout({ children, currentPageName }) {
               </div>
             )}
             <Link to={createPageUrl('NewShop')}>
-              <Button className="rounded-full px-3 md:px-6 py-2 bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white shadow-[6px_6px_12px_#c5c9ce,-3px_-3px_8px_#ffffff] hover:shadow-[4px_4px_8px_#c5c9ce,-2px_-2px_6px_#ffffff] border-0 gap-1 md:gap-2 text-sm">
+              <Button className="rounded-full px-6 py-2 bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white shadow-[6px_6px_12px_#c5c9ce,-3px_-3px_8px_#ffffff] hover:shadow-[4px_4px_8px_#c5c9ce,-2px_-2px_6px_#ffffff] border-0 gap-2">
                 <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Profile Shop</span>
-                <span className="sm:hidden">Add</span>
+                Profile Shop
               </Button>
             </Link>
           </div>
@@ -181,7 +180,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-          <main className="lg:ml-80 pt-20 p-3 md:p-6 pb-28 lg:pb-6 min-h-screen">
+          <main className="lg:ml-80 pt-24 p-4 md:p-6 pb-24 lg:pb-6 min-h-screen">
             {children}
             <footer className="mt-12 pt-6 border-t border-slate-200 text-center text-xs text-slate-400 space-y-1 pb-4">
               <p>© 2026 Kwahlelwa Group (Pty) Ltd. All Rights Reserved.</p>
@@ -192,13 +191,13 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Mobile Bottom Navigation */}
           <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#e8ecf1] border-t border-slate-200 shadow-[0_-4px_16px_#c5c9ce]">
-            <div className="flex items-center justify-around py-2 px-1" style={{paddingBottom: 'max(8px, env(safe-area-inset-bottom))'}}>
+            <div className="flex items-center justify-around py-1 px-2 safe-area-pb">
               {mobileNavItems.map((item) => {
                 const isActive = currentPageName === item.page;
                 const Icon = item.icon;
                 return (
                   <Link key={item.page} to={createPageUrl(item.page)} className="flex-1">
-                    <div className={`flex flex-col items-center gap-0.5 py-1.5 px-1 rounded-xl transition-all
+                    <div className={`flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl transition-all
                       ${item.highlight
                         ? isActive
                           ? 'bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white shadow-[4px_4px_8px_#c5c9ce,-2px_-2px_6px_#ffffff]'
@@ -207,8 +206,8 @@ export default function Layout({ children, currentPageName }) {
                           ? 'text-[#0ea5e9]'
                           : 'text-slate-500'
                       }`}>
-                      <Icon className="w-5 h-5" />
-                      <span className="text-[9px] font-medium leading-tight">{item.name}</span>
+                      <Icon className={`${item.highlight ? 'w-5 h-5' : 'w-5 h-5'}`} />
+                      <span className="text-[10px] font-medium leading-tight">{item.name}</span>
                     </div>
                   </Link>
                 );
