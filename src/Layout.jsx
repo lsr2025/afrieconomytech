@@ -70,23 +70,23 @@ export default function Layout({ children, currentPageName }) {
       
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#e8ecf1] shadow-[8px_8px_16px_#c5c9ce,-8px_-8px_16px_#ffffff]">
-        <div className="px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="px-4 md:px-6 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-slate-700 hover:bg-transparent"
+              className="lg:hidden text-slate-700 hover:bg-transparent flex-shrink-0"
             >
               <Menu className="w-6 h-6" />
             </Button>
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697cbf49c56a50b05e7118cf/c37070ab4_yamiMinelogo.jpg"
               alt="Yami Mine Solutions"
-              className="h-12 object-contain"
+              className="h-10 md:h-12 object-contain"
             />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             {user && (
               <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-full bg-[#e8ecf1] shadow-[inset_4px_4px_8px_#c5c9ce,inset_-4px_-4px_8px_#ffffff]">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] flex items-center justify-center shadow-[4px_4px_8px_#c5c9ce,-2px_-2px_6px_#ffffff]">
@@ -94,13 +94,13 @@ export default function Layout({ children, currentPageName }) {
                     {user.full_name?.[0] || user.email?.[0] || 'U'}
                   </span>
                 </div>
-                <span className="text-slate-700 font-medium">{user.full_name || user.email}</span>
+                <span className="text-slate-700 font-medium text-sm truncate max-w-32">{user.full_name || user.email}</span>
               </div>
             )}
             <Link to={createPageUrl('NewShop')}>
-              <Button className="rounded-full px-6 py-2 bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white shadow-[6px_6px_12px_#c5c9ce,-3px_-3px_8px_#ffffff] hover:shadow-[4px_4px_8px_#c5c9ce,-2px_-2px_6px_#ffffff] border-0 gap-2">
+              <Button className="rounded-full px-3 md:px-6 py-2 bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white shadow-[6px_6px_12px_#c5c9ce,-3px_-3px_8px_#ffffff] border-0 gap-2 text-sm">
                 <Plus className="w-4 h-4" />
-                Profile Shop
+                <span className="hidden sm:inline">Profile Shop</span>
               </Button>
             </Link>
           </div>
