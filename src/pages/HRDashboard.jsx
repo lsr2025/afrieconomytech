@@ -29,16 +29,16 @@ import {
   Target,
   Award,
   ArrowRight,
-  BarChart3
-} from 'lucide-react';
+  BarChart3 } from
+'lucide-react';
 import { motion } from 'framer-motion';
 
-const StatCard = ({ title, value, subtitle, icon: Icon, color }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3 }}
-  >
+const StatCard = ({ title, value, subtitle, icon: Icon, color }) =>
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3 }}>
+
     <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
@@ -53,13 +53,13 @@ const StatCard = ({ title, value, subtitle, icon: Icon, color }) => (
         </div>
       </CardContent>
     </Card>
-  </motion.div>
-);
+  </motion.div>;
+
 
 const AgentCard = ({ agent, attendance }) => {
-  const todayAttendance = attendance.find(a => 
-    a.agent_email === agent.user_email && 
-    a.date === new Date().toISOString().split('T')[0]
+  const todayAttendance = attendance.find((a) =>
+  a.agent_email === agent.user_email &&
+  a.date === new Date().toISOString().split('T')[0]
   );
 
   const getStatusBadge = () => {
@@ -77,8 +77,8 @@ const AgentCard = ({ agent, attendance }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.2 }}
-    >
+      transition={{ duration: 0.2 }}>
+
       <Link to={createPageUrl(`AgentProfile?id=${agent.id}`)}>
         <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50 hover:border-cyan-500/50 transition-all cursor-pointer">
           <CardContent className="p-4">
@@ -106,19 +106,19 @@ const AgentCard = ({ agent, attendance }) => {
                     {agent.performance_rating || 'N/A'}/5
                   </div>
                 </div>
-                {todayAttendance && (
-                  <div className="mt-2 text-xs text-slate-400">
+                {todayAttendance &&
+                <div className="mt-2 text-xs text-slate-400">
                     <span className="text-cyan-400">{todayAttendance.shops_profiled || 0}</span> shops • 
                     <span className="text-emerald-400 ml-1">{todayAttendance.inspections_completed || 0}</span> inspections
                   </div>
-                )}
+                }
               </div>
             </div>
           </CardContent>
         </Card>
       </Link>
-    </motion.div>
-  );
+    </motion.div>);
+
 };
 
 export default function HRDashboard() {
@@ -135,32 +135,32 @@ export default function HRDashboard() {
   });
 
   const today = new Date().toISOString().split('T')[0];
-  const todayAttendance = attendance.filter(a => a.date === today);
-  const checkedIn = todayAttendance.filter(a => a.status === 'checked_in').length;
-  const checkedOut = todayAttendance.filter(a => a.status === 'checked_out').length;
-  const absent = agents.filter(agent => 
-    !todayAttendance.some(a => a.agent_email === agent.user_email)
+  const todayAttendance = attendance.filter((a) => a.date === today);
+  const checkedIn = todayAttendance.filter((a) => a.status === 'checked_in').length;
+  const checkedOut = todayAttendance.filter((a) => a.status === 'checked_out').length;
+  const absent = agents.filter((agent) =>
+  !todayAttendance.some((a) => a.agent_email === agent.user_email)
   ).length;
 
   const totalHoursToday = todayAttendance.reduce((sum, a) => sum + (a.hours_worked || 0), 0);
 
-  const filteredAgents = agents.filter(agent =>
-    agent.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    agent.employee_id?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAgents = agents.filter((agent) =>
+  agent.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  agent.employee_id?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 md:p-6 pb-24 lg:pb-6">
+    <div className="bg-slate-200 pb-24 p-4 min-h-screen from-slate-950 via-slate-900 to-slate-950 md:p-6 lg:pb-6">
       {/* Header */}
       <div className="mb-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-        >
+          animate={{ opacity: 1, y: 0 }} className="mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-              HR Management
+            <h1 className="bg-transparent text-white my-2 text-3xl font-bold tracking-tight md:text-4xl">HR Management
+
             </h1>
             <p className="text-slate-400 mt-1">Field Agent Performance & Development</p>
           </div>
@@ -194,29 +194,29 @@ export default function HRDashboard() {
           value={agents.length}
           subtitle="Active field agents"
           icon={Users}
-          color="bg-cyan-500"
-        />
+          color="bg-cyan-500" />
+
         <StatCard
           title="Checked In Today"
           value={checkedIn}
           subtitle={`${absent} not checked in`}
           icon={UserCheck}
-          color="bg-emerald-500"
-        />
+          color="bg-emerald-500" />
+
         <StatCard
           title="Checked Out"
           value={checkedOut}
           subtitle="Completed for today"
           icon={UserX}
-          color="bg-blue-500"
-        />
+          color="bg-blue-500" />
+
         <StatCard
           title="Hours Today"
           value={totalHoursToday.toFixed(1)}
           subtitle="Total hours worked"
           icon={Clock}
-          color="bg-amber-500"
-        />
+          color="bg-amber-500" />
+
       </div>
 
       {/* Search */}
@@ -227,20 +227,20 @@ export default function HRDashboard() {
             placeholder="Search agents by name or employee ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-slate-800 border-slate-700 text-white"
-          />
+            className="pl-10 bg-slate-800 border-slate-700 text-white" />
+
         </div>
       </div>
 
       {/* Agents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredAgents.map(agent => (
-          <AgentCard key={agent.id} agent={agent} attendance={attendance} />
-        ))}
+        {filteredAgents.map((agent) =>
+        <AgentCard key={agent.id} agent={agent} attendance={attendance} />
+        )}
       </div>
 
-      {filteredAgents.length === 0 && (
-        <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50">
+      {filteredAgents.length === 0 &&
+      <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700/50">
           <CardContent className="p-12 text-center">
             <Users className="w-16 h-16 text-slate-600 mx-auto mb-4" />
             <p className="text-slate-400 text-lg">No agents found</p>
@@ -249,14 +249,14 @@ export default function HRDashboard() {
             </p>
           </CardContent>
         </Card>
-      )}
+      }
 
       {/* Footer */}
       <div className="mt-12 text-center">
         <p className="text-slate-500 text-sm">
-          Created by <span className="text-cyan-400 font-semibold">Kwahlelwa Group</span>
+          Created by <span className="text-stone-400 font-semibold">Kwahlelwa Group</span>
         </p>
       </div>
-    </div>
-  );
+    </div>);
+
 }
