@@ -21,17 +21,16 @@ import { Input } from "@/components/ui/input";
 import {
   Users,
   Calendar,
-  TrendingUp,
   UserCheck,
   UserX,
   Clock,
   Search,
   Plus,
   BookOpen,
-  Target,
   Award,
-  ArrowRight,
-  BarChart3
+  BarChart3,
+  FileSpreadsheet,
+  Upload
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
