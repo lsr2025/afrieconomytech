@@ -42,6 +42,7 @@ const navItems = [
 { name: 'Map View', icon: MapPin, page: 'MapView' },
 { name: 'Analytics', icon: BarChart3, page: 'Analytics' },
 { name: 'HR', icon: Users, page: 'HRDashboard' },
+{ name: 'Import Participants', icon: Users, page: 'ImportParticipants', adminOnly: true },
 { name: 'Admin Panel', icon: Shield, page: 'AdminPanel', adminOnly: true },
 { name: 'Guardrails', icon: Shield, page: 'Guardrails', adminOnly: true }];
 
